@@ -76,7 +76,7 @@ jobs:
 | out-dir              | The output directory                            | No       | bin               |
 | output               | The output binary name                          | No       | $repo-$target$ext |
 | musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl   |
-| x-flags              | Extra X ldflags to pass to the go build command | No       | -ldflags=-w -s    |
+| x-flags              | Extra X ldflags to pass to the go build command | No       |                   |
 
 ### Supported Targets
 
