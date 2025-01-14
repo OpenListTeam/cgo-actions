@@ -8,7 +8,7 @@ export type Flags = {
       values: string[]
       separator?: string // separate if undefined
       connector: '=' | ' '
-      quote?: "'" | '"'
+      quote: "'" | '"' | ''
     }
   }
 }

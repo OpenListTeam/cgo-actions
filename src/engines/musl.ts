@@ -217,7 +217,8 @@ function engineGen(files: string[]) {
             flags.extra[key] = {
               values: [staticLinkFlags],
               separator: ' ',
-              connector: '='
+              connector: '=',
+              quote: ''
             }
           }
         }

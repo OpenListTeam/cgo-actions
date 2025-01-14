@@ -125,7 +125,8 @@ export class Runner {
     extra_flags_map['-ldflags'] = {
       values: x_flags,
       separator: ' ',
-      connector: '='
+      connector: '=',
+      quote: ''
     }
     return {
       flags,
