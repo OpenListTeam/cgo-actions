@@ -1,4 +1,4 @@
-import { $$, TempBinName } from '../utils'
+import { $$, calFlags, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 
@@ -30,6 +30,6 @@ registerEngine({
         CC: 'zcc',
         CXX: 'z++'
       }
-    })`go build -o ${TempBinName}.exe ${input.flags} ${input.pkgs}`
+    })`go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

@@ -1,4 +1,4 @@
-import { $$, TempBinName, arrMinus, mapRev } from '../utils'
+import { $$, TempBinName, arrMinus, calFlags, mapRev } from '../utils'
 import { registerEngine } from '../runner'
 import * as core from '@actions/core'
 import fs from 'fs'
@@ -207,29 +207,29 @@ function engineGen(files: string[]) {
       let flags = input.flags
       if (core.getInput('static-link-for-musl') === 'true') {
         core.info('Setting static link for musl...')
-        if (flags.includes(staticLinkFlags)) {
+        if (flags.flags.includes(staticLinkFlags)) {
           core.info('Already set static link flags.')
         } else {
-          const insertFlag = '-ldflags='
-          const insertIndex = flags.indexOf(insertFlag)
-          if (insertIndex === -1) {
-            flags += `-ldflags='${staticLinkFlags}'`
+          const key = '-ldflags'
+          if (flags.extra[key]) {
+            flags.extra[key].values.push(staticLinkFlags)
           } else {
-            flags =
-              flags.slice(0, insertIndex + insertFlag.length) +
-              staticLinkFlags +
-              ' ' +
-              flags.slice(insertIndex + insertFlag.length)
+            flags.extra[key] = {
+              values: [staticLinkFlags],
+              separator: ' ',
+              connector: '=',
+              quote: '"'
+            }
           }
         }
       }
       await input.$({
         env: env
-      })`go build -o ${TempBinName} ${flags} ${input.pkgs}`
+      })`go build -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`
     },
     async on_target_rename(input) {
       const [os, arch, musl] = input.target.split('-')
-      let res = input.musl_target_format
+      let res = core.getInput('musl-target-format')
       res = res.replace('$os', os)
       res = res.replace('$arch', arch)
       res = res.replace('$musl', musl)

@@ -1,5 +1,5 @@
 import { $ } from 'execa'
-import { Engine, Input } from './types'
+import { Engine, Flags, Input } from './types'
 
 export function engineKey(engine: Engine) {
   return engine.targets.join(',')
@@ -26,4 +26,32 @@ export function mapRev(obj: Record<string, string>) {
     rev[v] = k
   }
   return rev
+}
+
+export function calFlags(flags: Flags) {
+  let res = flags.flags
+  for (const [
+    key,
+    { values, separator, connector: connect, quote }
+  ] of Object.entries(flags.extra)) {
+    if (separator) {
+      const merged = values.join(separator)
+      const index_str = key + connect + quote
+      if (res.includes(index_str)) {
+        const insertIndex = res.indexOf(key)
+        res =
+          res.slice(0, insertIndex + index_str.length) +
+          merged +
+          separator +
+          res.slice(insertIndex + index_str.length)
+      } else {
+        res += ` ${key}${connect}${quote}${merged}${quote}`
+      }
+    } else {
+      values.forEach(value => {
+        res += ` ${key}${connect}${quote}${value}${quote}`
+      })
+    }
+  }
+  return res
 }

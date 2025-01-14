@@ -9,7 +9,40 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var (
+	owner      string
+	repo       string
+	target     string
+	sha        string
+	short_sha  string
+	pr         string
+	ext        string
+	tag        string
+	hostname   string
+	username   string
+	built_on   string
+	built_at   string
+	git_author string
+	git_commit string
+	go_version string
+)
+
 func main() {
+	fmt.Printf("owner: %s\n", owner)
+	fmt.Printf("repo: %s\n", repo)
+	fmt.Printf("target: %s\n", target)
+	fmt.Printf("sha: %s\n", sha)
+	fmt.Printf("short_sha: %s\n", short_sha)
+	fmt.Printf("pr: %s\n", pr)
+	fmt.Printf("ext: %s\n", ext)
+	fmt.Printf("tag: %s\n", tag)
+	fmt.Printf("hostname: %s\n", hostname)
+	fmt.Printf("username: %s\n", username)
+	fmt.Printf("built_on: %s\n", built_on)
+	fmt.Printf("built_at: %s\n", built_at)
+	fmt.Printf("git_author: %s\n", git_author)
+	fmt.Printf("git_commit: %s\n", git_commit)
+	fmt.Printf("go_version: %s\n", go_version)
 	os.Remove("./foo.db")
 
 	db, err := sql.Open("sqlite3", "./foo.db")

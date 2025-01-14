@@ -1,8 +1,17 @@
-import { Context, CommonInput, Engine, Input } from './types'
+import {
+  Context,
+  CommonInput,
+  Engine,
+  Input,
+  Flags,
+  CommonInputWithTarget
+} from './types'
 import * as core from '@actions/core'
-import { $$, engineKey, getTempBinPath } from './utils'
+import { $$, calFlags, engineKey, getTempBinPath } from './utils'
 import fs from 'fs'
 import pm from 'picomatch'
+import os from 'os'
+import { $ } from 'execa'
 
 const engines = new Map<string, Engine>()
 const prepared = new Set<string>()
@@ -32,17 +41,14 @@ export class Runner {
   private initInput(ctx: Context) {
     const dir = core.getInput('dir')
     const pkgs = core.getInput('packages')
-    const flags = core.getInput('flags')
+
     const output = core.getInput('output')
     const out_dir = core.getInput('out-dir')
-    const musl_target_format = core.getInput('musl-target-format')
     this.input = {
       dir,
       pkgs,
-      flags,
       output,
       out_dir,
-      musl_target_format,
       $: $$({
         cwd: dir
       })
@@ -72,9 +78,16 @@ export class Runner {
       if (!engine) {
         throw new Error(`Engine not found: ${target}!`)
       }
-      const input = {
+      const tmpInput = {
         ...this.input,
         target
+      }
+      const flags = await this.getFlags(tmpInput)
+      core.info(`Flags json: ${JSON.stringify(flags, null, 2)}...`)
+      core.info(`Flags: ${calFlags(flags)}...`)
+      const input = {
+        ...tmpInput,
+        flags
       }
       if (engine.prepare && !prepared.has(engineKey(engine))) {
         core.info(`Preparing engine: ${engineKey(engine)}`)
@@ -92,22 +105,45 @@ export class Runner {
     await this.setOutput()
   }
 
+  private async getFlags(input: CommonInputWithTarget): Promise<Flags> {
+    const flags = core.getInput('flags')
+    const extra_flags_map = {} as Flags['extra']
+    const magicMap = await this.getMagicMap(input)
+    const x_flags = core
+      .getInput('x-flags')
+      .split('\n')
+      .map(x => x.trim())
+      .filter(x => x)
+      .map(x => {
+        for (const [magic, target] of Object.entries(magicMap)) {
+          const key = `$${magic}`
+          x = x.replaceAll(key, target)
+        }
+        return x
+      })
+      .map(x => `-X '${x}'`)
+    extra_flags_map['-ldflags'] = {
+      values: x_flags,
+      separator: ' ',
+      connector: '=',
+      quote: '"'
+    }
+    return {
+      flags,
+      extra: extra_flags_map
+    }
+  }
+
   private async setOutput() {
     const files = fs.readdirSync(this.input.out_dir)
     core.setOutput('files', files.join('\n'))
   }
 
   private async getOutput(input: Input, engine: Engine): Promise<string> {
-    const magicMap = {
-      owner: this.ctx.repo.owner,
-      repo: this.ctx.repo.repo,
-      target: input.target,
-      sha: this.ctx.sha,
-      short_sha: this.ctx.sha.slice(0, 7),
-      pr: this.ctx.issue.number?.toString() ?? '',
-      ext: input.target.includes('windows') ? '.exe' : '',
-      tag: this.ctx.ref.replace('refs/tags/', '')
-    } as Record<string, string | ((input: Input) => string)>
+    const magicMap = (await this.getMagicMap(input)) as Record<
+      string,
+      string | ((input: Input) => string)
+    >
     if (engine.on_target_rename) {
       magicMap.target = await engine.on_target_rename(input)
     }
@@ -119,5 +155,26 @@ export class Runner {
       output = output.replaceAll(key, value)
     }
     return output
+  }
+
+  private async getMagicMap(input: CommonInputWithTarget) {
+    const goVersion = (await $`go version`).stdout.replace('go version ', '')
+    return {
+      owner: this.ctx.repo.owner,
+      repo: this.ctx.repo.repo,
+      target: input.target,
+      sha: this.ctx.sha,
+      short_sha: this.ctx.sha.slice(0, 7),
+      pr: this.ctx.issue.number?.toString() ?? '',
+      ext: input.target.includes('windows') ? '.exe' : '',
+      tag: this.ctx.ref.replace('refs/tags/', ''),
+      hostname: os.hostname(),
+      username: os.userInfo().username,
+      built_on: `${os.userInfo().username}@${os.hostname()}`,
+      built_at: new Date().toLocaleString(),
+      git_author: (await $`git show -s ${"--format='%an <%ae>'"}`).stdout,
+      git_commit: (await $`git show -s ${"--format='%H'"}`).stdout,
+      go_version: goVersion
+    }
   }
 }

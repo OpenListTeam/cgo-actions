@@ -20,7 +20,7 @@ inputs:
   flags:
     description: 'The flags to pass to the go build command'
     required: false
-    default: '-ldflags=-w -s'
+    default: '-ldflags="-w -s"'
   static-link-for-musl:
     description: 'Whether to statically link for the musl libc'
     required: false
@@ -50,6 +50,10 @@ inputs:
     description: 'The output binary name'
     required: false
     default: '$repo-$target$ext'
+  x-flags:
+    description: 'Extra X ldflags to pass to the go build command'
+    required: false
+    default: ''
 
 # Define your outputs here.
 outputs:

@@ -1,4 +1,4 @@
-import { $$, TempBinName } from '../utils'
+import { $$, calFlags, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 
@@ -33,6 +33,6 @@ registerEngine({
         GOARCH: arch,
         CC: `${process.cwd()}/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/${arches[arch].cc}`
       }
-    })`go build -o ${TempBinName} ${input.flags} ${input.pkgs}`
+    })`go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

@@ -1,18 +1,32 @@
 import { $$ } from './utils'
 export { Context } from '@actions/github/lib/context'
 
+export type Flags = {
+  flags: string
+  extra: {
+    [key: string]: {
+      values: string[]
+      separator?: string // separate if undefined
+      connector: '=' | ' '
+      quote?: "'" | '"'
+    }
+  }
+}
+
 export type CommonInput = {
   dir: string
   pkgs: string
-  flags: string
   out_dir: string
   output: string
-  musl_target_format: string
   $: typeof $$
 }
 
-export type Input = CommonInput & {
+export type CommonInputWithTarget = CommonInput & {
   target: string
+}
+
+export type Input = CommonInputWithTarget & {
+  flags: Flags
 }
 
 export type Engine = {

@@ -1,4 +1,4 @@
-import { $$, TempBinName } from '../utils'
+import { $$, calFlags, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 
@@ -37,6 +37,6 @@ registerEngine({
         CGO_LDFLAGS: '-fuse-ld=lld',
         CC: `clang --target=${target} --sysroot=${sysroot_dir}`
       }
-    })`go build -o ${TempBinName} ${input.flags} ${input.pkgs}`
+    })`go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

@@ -36044,6 +36044,32 @@ function mapRev(obj) {
     }
     return rev;
 }
+function calFlags(flags) {
+    let res = flags.flags;
+    for (const [key, { values, separator, connector: connect, quote }] of Object.entries(flags.extra)) {
+        if (separator) {
+            const merged = values.join(separator);
+            const index_str = key + connect + quote;
+            if (res.includes(index_str)) {
+                const insertIndex = res.indexOf(key);
+                res =
+                    res.slice(0, insertIndex + index_str.length) +
+                        merged +
+                        separator +
+                        res.slice(insertIndex + index_str.length);
+            }
+            else {
+                res += ` ${key}${connect}${quote}${merged}${quote}`;
+            }
+        }
+        else {
+            values.forEach(value => {
+                res += ` ${key}${connect}${quote}${value}${quote}`;
+            });
+        }
+    }
+    return res;
+}
 
 // EXTERNAL MODULE: ./node_modules/.pnpm/@actions+core@1.10.1/node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(9093);
@@ -36053,7 +36079,12 @@ var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 // EXTERNAL MODULE: ./node_modules/.pnpm/picomatch@4.0.2/node_modules/picomatch/index.js
 var picomatch = __nccwpck_require__(6906);
 var picomatch_default = /*#__PURE__*/__nccwpck_require__.n(picomatch);
+// EXTERNAL MODULE: external "os"
+var external_os_ = __nccwpck_require__(2037);
+var external_os_default = /*#__PURE__*/__nccwpck_require__.n(external_os_);
 ;// CONCATENATED MODULE: ./src/runner.ts
+
+
 
 
 
@@ -36085,17 +36116,13 @@ class Runner {
     initInput(ctx) {
         const dir = core.getInput('dir');
         const pkgs = core.getInput('packages');
-        const flags = core.getInput('flags');
         const output = core.getInput('output');
         const out_dir = core.getInput('out-dir');
-        const musl_target_format = core.getInput('musl-target-format');
         this.input = {
             dir,
             pkgs,
-            flags,
             output,
             out_dir,
-            musl_target_format,
             $: $$({
                 cwd: dir
             })
@@ -36123,9 +36150,16 @@ class Runner {
             if (!engine) {
                 throw new Error(`Engine not found: ${target}!`);
             }
-            const input = {
+            const tmpInput = {
                 ...this.input,
                 target
+            };
+            const flags = await this.getFlags(tmpInput);
+            core.info(`Flags json: ${JSON.stringify(flags, null, 2)}...`);
+            core.info(`Flags: ${calFlags(flags)}...`);
+            const input = {
+                ...tmpInput,
+                flags
             };
             if (engine.prepare && !prepared.has(engineKey(engine))) {
                 core.info(`Preparing engine: ${engineKey(engine)}`);
@@ -36142,21 +36176,39 @@ class Runner {
         }
         await this.setOutput();
     }
+    async getFlags(input) {
+        const flags = core.getInput('flags');
+        const extra_flags_map = {};
+        const magicMap = await this.getMagicMap(input);
+        const x_flags = core.getInput('x-flags')
+            .split('\n')
+            .map(x => x.trim())
+            .filter(x => x)
+            .map(x => {
+            for (const [magic, target] of Object.entries(magicMap)) {
+                const key = `$${magic}`;
+                x = x.replaceAll(key, target);
+            }
+            return x;
+        })
+            .map(x => `-X '${x}'`);
+        extra_flags_map['-ldflags'] = {
+            values: x_flags,
+            separator: ' ',
+            connector: '=',
+            quote: '"'
+        };
+        return {
+            flags,
+            extra: extra_flags_map
+        };
+    }
     async setOutput() {
         const files = external_fs_default().readdirSync(this.input.out_dir);
         core.setOutput('files', files.join('\n'));
     }
     async getOutput(input, engine) {
-        const magicMap = {
-            owner: this.ctx.repo.owner,
-            repo: this.ctx.repo.repo,
-            target: input.target,
-            sha: this.ctx.sha,
-            short_sha: this.ctx.sha.slice(0, 7),
-            pr: this.ctx.issue.number?.toString() ?? '',
-            ext: input.target.includes('windows') ? '.exe' : '',
-            tag: this.ctx.ref.replace('refs/tags/', '')
-        };
+        const magicMap = (await this.getMagicMap(input));
         if (engine.on_target_rename) {
             magicMap.target = await engine.on_target_rename(input);
         }
@@ -36168,6 +36220,26 @@ class Runner {
             output = output.replaceAll(key, value);
         }
         return output;
+    }
+    async getMagicMap(input) {
+        const goVersion = (await $ `go version`).stdout.replace('go version ', '');
+        return {
+            owner: this.ctx.repo.owner,
+            repo: this.ctx.repo.repo,
+            target: input.target,
+            sha: this.ctx.sha,
+            short_sha: this.ctx.sha.slice(0, 7),
+            pr: this.ctx.issue.number?.toString() ?? '',
+            ext: input.target.includes('windows') ? '.exe' : '',
+            tag: this.ctx.ref.replace('refs/tags/', ''),
+            hostname: external_os_default().hostname(),
+            username: external_os_default().userInfo().username,
+            built_on: `${external_os_default().userInfo().username}@${external_os_default().hostname()}`,
+            built_at: new Date().toLocaleString(),
+            git_author: (await $ `git show -s ${"--format='%an <%ae>'"}`).stdout,
+            git_commit: (await $ `git show -s ${"--format='%H'"}`).stdout,
+            go_version: goVersion
+        };
     }
 }
 
@@ -36205,7 +36277,7 @@ registerEngine({
                 GOARCH: arch,
                 CC: `${process.cwd()}/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/${arches[arch].cc}`
             }
-        }) `go build -o ${TempBinName} ${input.flags} ${input.pkgs}`;
+        }) `go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -36409,31 +36481,31 @@ function engineGen(files) {
             let flags = input.flags;
             if (core.getInput('static-link-for-musl') === 'true') {
                 core.info('Setting static link for musl...');
-                if (flags.includes(staticLinkFlags)) {
+                if (flags.flags.includes(staticLinkFlags)) {
                     core.info('Already set static link flags.');
                 }
                 else {
-                    const insertFlag = '-ldflags=';
-                    const insertIndex = flags.indexOf(insertFlag);
-                    if (insertIndex === -1) {
-                        flags += `-ldflags='${staticLinkFlags}'`;
+                    const key = '-ldflags';
+                    if (flags.extra[key]) {
+                        flags.extra[key].values.push(staticLinkFlags);
                     }
                     else {
-                        flags =
-                            flags.slice(0, insertIndex + insertFlag.length) +
-                                staticLinkFlags +
-                                ' ' +
-                                flags.slice(insertIndex + insertFlag.length);
+                        flags.extra[key] = {
+                            values: [staticLinkFlags],
+                            separator: ' ',
+                            connector: '=',
+                            quote: '"'
+                        };
                     }
                 }
             }
             await input.$({
                 env: env
-            }) `go build -o ${TempBinName} ${flags} ${input.pkgs}`;
+            }) `go build -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`;
         },
         async on_target_rename(input) {
             const [os, arch, musl] = input.target.split('-');
-            let res = input.musl_target_format;
+            let res = core.getInput('musl-target-format');
             res = res.replace('$os', os);
             res = res.replace('$arch', arch);
             res = res.replace('$musl', musl);
@@ -36473,7 +36545,7 @@ registerEngine({
                 CC: 'zcc',
                 CXX: 'z++'
             }
-        }) `go build -o ${TempBinName}.exe ${input.flags} ${input.pkgs}`;
+        }) `go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -36509,7 +36581,7 @@ registerEngine({
     },
     async run(input) {
         const target = targetMap[input.target];
-        await input.$ `xgo -targets=${target} -out ${TempBinName} ${input.flags} ${input.pkgs}`;
+        await input.$ `xgo -targets=${target} -out ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
         const curBin = `${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`;
         const outBin = curBin.replace(`-${input.target}`, '');
         // renameSync(
@@ -36558,7 +36630,7 @@ registerEngine({
                 CGO_LDFLAGS: '-fuse-ld=lld',
                 CC: `clang --target=${target} --sysroot=${sysroot_dir}`
             }
-        }) `go build -o ${TempBinName} ${input.flags} ${input.pkgs}`;
+        }) `go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
