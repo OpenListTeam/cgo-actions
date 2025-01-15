@@ -21,12 +21,17 @@ jobs:
   test-action:
     strategy:
       matrix:
-        targets:
-          - '!(*musl*|*windows-arm64*|*android*|*freebsd*)' # xgo
-          - 'linux-*-musl*' #musl
-          - 'windows-arm64' #win-arm64
-          - 'android-*' #android
-          - 'freebsd-*' #freebsd
+        include:
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*)' # xgo
+            name: "xgo"
+          - target: 'linux-*-musl*' #musl
+            name: "musl"
+          - target: 'windows-arm64' #win-arm64
+            name: "win-arm64"
+          - target: 'android-*' #android
+            name: "android"
+          - target: 'freebsd-*' #freebsd
+            name: "freebsd"
     name: GitHub Actions Test
     runs-on: ubuntu-latest
 
@@ -45,7 +50,7 @@ jobs:
         uses: ./
         with:
           dir: './example'
-          targets: ${{ matrix.targets }}
+          targets: ${{ matrix.target }}
           musl-target-format: $os-$musl-$arch
           x-flags: |
             main.owner=$owner
@@ -71,5 +76,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.sha }}
+          name: ${{ matrix.name }}_${{ github.sha }}
           path: bin/
