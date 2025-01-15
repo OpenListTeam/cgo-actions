@@ -48,22 +48,28 @@ jobs:
           targets: ${{ matrix.targets }}
           musl-target-format: $os-$musl-$arch
           x-flags: |
-            example/main.owner=$owner
-            example/main.repo=$repo
-            example/main.target=$target
-            example/main.sha=$sha
-            example/main.short_sha=$short_sha
-            example/main.pr=$pr
-            example/main.ext=$ext
-            example/main.tag=$tag
-            example/main.hostname=$hostname
-            example/main.username=$username
-            example/main.built_on=$built_on
-            example/main.built_at=$built_at
-            example/main.git_author=$git_author
-            example/main.git_commit=$git_commit
-            example/main.go_version=$go_version
+            main.owner=$owner
+            main.repo=$repo
+            main.target=$target
+            main.sha=$sha
+            main.short_sha=$short_sha
+            main.pr=$pr
+            main.ext=$ext
+            main.tag=$tag
+            main.hostname=$hostname
+            main.username=$username
+            main.built_on=$built_on
+            main.built_at=$built_at
+            main.git_author=$git_author
+            main.git_commit=$git_commit
+            main.go_version=$go_version
 
       - name: Print Output
         id: output
         run: echo "${{ steps.test-action.outputs.files }}"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}
+          path: bin/
