@@ -22,16 +22,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*)' # xgo
-            name: "xgo"
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # xgo
+            name: 'xgo'
           - target: 'linux-*-musl*' #musl
-            name: "musl"
+            name: 'musl'
           - target: 'windows-arm64' #win-arm64
-            name: "win-arm64"
+            name: 'win-arm64'
           - target: 'android-*' #android
-            name: "android"
+            name: 'android'
           - target: 'freebsd-*' #freebsd
-            name: "freebsd"
+            name: 'freebsd'
+          - target: 'windows7-*' #windows7
+            name: 'windows7'
     name: GitHub Actions Test
     runs-on: ubuntu-latest
 
@@ -43,7 +45,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '1.24.3'
 
       - name: Test Local Action
         id: test-action
