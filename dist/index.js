@@ -36665,14 +36665,15 @@ async function getGoVersion() {
 async function setupWin7Go() {
     const goVersion = await getGoVersion();
     await $$ `curl -L https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
-    await $$ `unzip go-win7.zip -d ~/go-win7`;
+    await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
-    return '~/go-win7/bin/go';
+    return `${cwd}/go-win7/bin/go`;
 }
 const zigTargetMap = {
     'windows7-386': 'x86-windows-gnu',
     'windows7-amd64': 'x86_64-windows-gnu'
 };
+const cwd = process.cwd();
 registerEngine({
     targets: ['windows7-386', 'windows7-amd64'],
     async prepare(input) {
@@ -36692,7 +36693,7 @@ registerEngine({
                 CC: 'zcc',
                 CXX: 'z++'
             }
-        }) `~/go-win7/bin/go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `${cwd}/go-win7/bin/go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
