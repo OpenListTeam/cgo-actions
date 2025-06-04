@@ -28,11 +28,12 @@ jobs:
     strategy:
       matrix:
         targets:
-          - '!(*musl*|*windows-arm64*|*android*|*freebsd*)' # xgo
+          - '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # xgo
           - 'linux-*-musl*' #musl
           - 'windows-arm64' #win-arm64
           - 'android-*' #android
           - 'freebsd-*' #freebsd
+          - 'windows7-*' #windows7
     name: Build Go Program
     runs-on: ubuntu-latest
 
@@ -127,6 +128,8 @@ Use glob patterns to match the targets you want to build for.
 - freebsd-386
 - freebsd-amd64
 - freebsd-arm64
+- windows7-386
+- windows7-amd64
 
 ## Outputs
 
