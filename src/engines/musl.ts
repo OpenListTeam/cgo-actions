@@ -182,7 +182,7 @@ function engineGen(files: string[]) {
   registerEngine({
     targets: files.map(fileToTarget),
     async run(input) {
-      const base = 'https://musl.cc'
+      const base = input.musl_base_url
       const file = targetToFile(input.target)
       const filename = file + '.tgz'
       const url = `${base}/${filename}`

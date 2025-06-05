@@ -44,11 +44,16 @@ export class Runner {
 
     const output = core.getInput('output')
     const out_dir = core.getInput('out-dir')
+    let musl_base_url = core.getInput('musl-base-url')
+    if (musl_base_url.endsWith('/')) {
+      musl_base_url = musl_base_url.slice(0, -1)
+    }
     this.input = {
       dir,
       pkgs,
       output,
       out_dir,
+      musl_base_url,
       $: $$({
         cwd: dir
       })

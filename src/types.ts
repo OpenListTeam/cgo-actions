@@ -18,6 +18,7 @@ export type CommonInput = {
   pkgs: string
   out_dir: string
   output: string
+  musl_base_url: string
   $: typeof $$
 }
 

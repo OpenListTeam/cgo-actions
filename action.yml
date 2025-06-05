@@ -25,6 +25,10 @@ inputs:
     description: 'Whether to statically link for the musl libc'
     required: false
     default: 'true'
+  musl-base-url:
+    description: 'The base url for musl'
+    required: false
+    default: 'https://github.com/go-cross/musl-toolchain-archive/releases/latest/download'
   targets:
     description: 'The targets to build for'
     required: false

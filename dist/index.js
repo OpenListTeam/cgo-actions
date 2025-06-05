@@ -36118,11 +36118,16 @@ class Runner {
         const pkgs = core.getInput('packages');
         const output = core.getInput('output');
         const out_dir = core.getInput('out-dir');
+        let musl_base_url = core.getInput('musl-base-url');
+        if (musl_base_url.endsWith('/')) {
+            musl_base_url = musl_base_url.slice(0, -1);
+        }
         this.input = {
             dir,
             pkgs,
             output,
             out_dir,
+            musl_base_url,
             $: $$({
                 cwd: dir
             })
@@ -36456,7 +36461,7 @@ function engineGen(files) {
     registerEngine({
         targets: files.map(fileToTarget),
         async run(input) {
-            const base = 'https://musl.cc';
+            const base = input.musl_base_url;
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
