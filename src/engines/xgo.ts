@@ -24,6 +24,7 @@ const targetMap = {
 registerEngine({
   targets: Object.keys(targetMap),
   async prepare(input) {
+    console.log(input.output)
     // docker pull crazymax/xgo:latest
     await $$`docker pull crazymax/xgo:latest`
     // go install github.com/crazy-max/xgo@latest

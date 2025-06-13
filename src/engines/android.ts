@@ -20,6 +20,7 @@ const arches = {
 registerEngine({
   targets: Object.keys(arches).map(arch => `android-${arch}`),
   async prepare(input) {
+    console.log(input.output)
     await $$`wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`
     await $$`unzip android-ndk-r26b-linux.zip`
     fs.rmSync('android-ndk-r26b-linux.zip')

@@ -1,64 +1,64 @@
-import { $$, TempBinName, arrMinus, calFlags, mapRev } from '../utils'
+import { $$, TempBinName, calFlags, mapRev } from '../utils'
 import { registerEngine } from '../runner'
 import * as core from '@actions/core'
 import fs from 'fs'
 
-const all_files = [
-  'aarch64-linux-musl-cross',
-  'aarch64_be-linux-musl-cross',
-  'arm-linux-musleabi-cross',
-  'arm-linux-musleabihf-cross',
-  'armeb-linux-musleabi-cross',
-  'armeb-linux-musleabihf-cross',
-  'armel-linux-musleabi-cross',
-  'armel-linux-musleabihf-cross',
-  'armv5l-linux-musleabi-cross',
-  'armv5l-linux-musleabihf-cross',
-  'armv6-linux-musleabi-cross',
-  'armv6-linux-musleabihf-cross',
-  'armv7l-linux-musleabihf-cross',
-  'armv7m-linux-musleabi-cross',
-  'armv7r-linux-musleabihf-cross',
-  'i486-linux-musl-cross',
-  'i686-linux-musl-cross',
-  'i686-w64-mingw32-cross',
-  'm68k-linux-musl-cross',
-  'microblaze-linux-musl-cross',
-  'microblazeel-linux-musl-cross',
-  'mips-linux-musl-cross',
-  'mips-linux-musln32sf-cross',
-  'mips-linux-muslsf-cross',
-  'mips64-linux-musl-cross',
-  'mips64-linux-musln32-cross',
-  'mips64-linux-musln32sf-cross',
-  'mips64el-linux-musl-cross',
-  'mips64el-linux-musln32-cross',
-  'mips64el-linux-musln32sf-cross',
-  'mipsel-linux-musl-cross',
-  'mipsel-linux-musln32-cross',
-  'mipsel-linux-musln32sf-cross',
-  'mipsel-linux-muslsf-cross',
-  'or1k-linux-musl-cross',
-  'powerpc-linux-musl-cross',
-  'powerpc-linux-muslsf-cross',
-  'powerpc64-linux-musl-cross',
-  'powerpc64le-linux-musl-cross',
-  'powerpcle-linux-musl-cross',
-  'powerpcle-linux-muslsf-cross',
-  'riscv32-linux-musl-cross',
-  'riscv64-linux-musl-cross',
-  's390x-linux-musl-cross',
-  'sh2-linux-musl-cross',
-  'sh2-linux-muslfdpic-cross',
-  'sh2eb-linux-musl-cross',
-  'sh2eb-linux-muslfdpic-cross',
-  'sh4-linux-musl-cross',
-  'sh4eb-linux-musl-cross',
-  'x86_64-linux-musl-cross',
-  'x86_64-linux-muslx32-cross',
-  'x86_64-w64-mingw32-cross',
-  'loongarch64-linux-musl-cross'
-]
+// const all_files = [
+//   'aarch64-linux-musl-cross',
+//   'aarch64_be-linux-musl-cross',
+//   'arm-linux-musleabi-cross',
+//   'arm-linux-musleabihf-cross',
+//   'armeb-linux-musleabi-cross',
+//   'armeb-linux-musleabihf-cross',
+//   'armel-linux-musleabi-cross',
+//   'armel-linux-musleabihf-cross',
+//   'armv5l-linux-musleabi-cross',
+//   'armv5l-linux-musleabihf-cross',
+//   'armv6-linux-musleabi-cross',
+//   'armv6-linux-musleabihf-cross',
+//   'armv7l-linux-musleabihf-cross',
+//   'armv7m-linux-musleabi-cross',
+//   'armv7r-linux-musleabihf-cross',
+//   'i486-linux-musl-cross',
+//   'i686-linux-musl-cross',
+//   'i686-w64-mingw32-cross',
+//   'm68k-linux-musl-cross',
+//   'microblaze-linux-musl-cross',
+//   'microblazeel-linux-musl-cross',
+//   'mips-linux-musl-cross',
+//   'mips-linux-musln32sf-cross',
+//   'mips-linux-muslsf-cross',
+//   'mips64-linux-musl-cross',
+//   'mips64-linux-musln32-cross',
+//   'mips64-linux-musln32sf-cross',
+//   'mips64el-linux-musl-cross',
+//   'mips64el-linux-musln32-cross',
+//   'mips64el-linux-musln32sf-cross',
+//   'mipsel-linux-musl-cross',
+//   'mipsel-linux-musln32-cross',
+//   'mipsel-linux-musln32sf-cross',
+//   'mipsel-linux-muslsf-cross',
+//   'or1k-linux-musl-cross',
+//   'powerpc-linux-musl-cross',
+//   'powerpc-linux-muslsf-cross',
+//   'powerpc64-linux-musl-cross',
+//   'powerpc64le-linux-musl-cross',
+//   'powerpcle-linux-musl-cross',
+//   'powerpcle-linux-muslsf-cross',
+//   'riscv32-linux-musl-cross',
+//   'riscv64-linux-musl-cross',
+//   's390x-linux-musl-cross',
+//   'sh2-linux-musl-cross',
+//   'sh2-linux-muslfdpic-cross',
+//   'sh2eb-linux-musl-cross',
+//   'sh2eb-linux-muslfdpic-cross',
+//   'sh4-linux-musl-cross',
+//   'sh4eb-linux-musl-cross',
+//   'x86_64-linux-musl-cross',
+//   'x86_64-linux-muslx32-cross',
+//   'x86_64-w64-mingw32-cross',
+//   'loongarch64-linux-musl-cross'
+// ]
 
 const val_files = [
   'aarch64-linux-musl-cross',
@@ -85,8 +85,6 @@ const val_files = [
   'loongarch64-linux-musl-cross'
 ]
 
-const exp_files = arrMinus(all_files, ...val_files)
-
 const archMap = {
   x86_64: 'amd64',
   aarch64: 'arm64',
@@ -105,7 +103,7 @@ const osMap = {
 const osMapRev = mapRev(osMap)
 
 function fileToTarget(file: string) {
-  let name = file.replace('-cross', '')
+  const name = file.replace('-cross', '')
   const [arch, os, musl] = name.split('-')
   return `${osMap[os] ?? os}-${archMap[arch] ?? arch}-${musl}`
 }
@@ -143,7 +141,7 @@ function engineGen(files: string[]) {
         env['GOARM'] = arch.split('armv')[1][0]
       }
       core.info(`Building with env:\n${JSON.stringify(env, null, 2)}...`)
-      let flags = input.flags
+      const flags = input.flags
       if (core.getInput('static-link-for-musl') === 'true') {
         core.info('Setting static link for musl...')
         if (flags.flags.includes(staticLinkFlags)) {

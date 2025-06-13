@@ -28,7 +28,7 @@ export function getSupportedTargets(): string[] {
 
 export class Runner {
   public constructor(readonly ctx: Context) {
-    this.initInput(ctx)
+    this.initInput(/**ctx*/)
     core.info(`Making necessary directories...`)
     for (const dir of [this.input.out_dir]) {
       if (!fs.existsSync(dir)) {
@@ -40,7 +40,7 @@ export class Runner {
   private input!: CommonInput
   private targets!: string[]
 
-  private initInput(ctx: Context) {
+  private initInput(/**ctx: Context*/) {
     const dir = core.getInput('dir')
     const pkgs = core.getInput('packages')
 
@@ -61,7 +61,7 @@ export class Runner {
       })
     }
     core.info(`Input: ${JSON.stringify(this.input)}...`)
-    
+
     const targets = core
       .getInput('targets')
       .split(',')

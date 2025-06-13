@@ -67,18 +67,18 @@ jobs:
 
 ## Inputs
 
-| Input                | Description                                     | Required | Default           |
-| -------------------- | ----------------------------------------------- | -------- | ----------------- |
-| dir                  | The directory to work                           | No       | .                 |
-| packages             | The packages to build                           | No       | .                 |
-| flags                | The flags to pass to the go build command       | No       | -ldflags=-w -s    |
-| static-link-for-musl | Whether to statically link for the musl libc    | No       | true              |
-| targets              | The targets to build for                        | No       | \*                |
-| out-dir              | The output directory                            | No       | bin               |
-| output               | The output binary name                          | No       | $repo-$target$ext |
-| musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl   |
-| x-flags              | Extra X ldflags to pass to the go build command | No       |                   |
-| musl-base-url        | Where to download musl compilers                | No       |  https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
+| Input                | Description                                     | Required | Default                                                                 |
+| -------------------- | ----------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| dir                  | The directory to work                           | No       | .                                                                       |
+| packages             | The packages to build                           | No       | .                                                                       |
+| flags                | The flags to pass to the go build command       | No       | -ldflags=-w -s                                                          |
+| static-link-for-musl | Whether to statically link for the musl libc    | No       | true                                                                    |
+| targets              | The targets to build for                        | No       | \*                                                                      |
+| out-dir              | The output directory                            | No       | bin                                                                     |
+| output               | The output binary name                          | No       | $repo-$target$ext                                                       |
+| musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl                                                         |
+| x-flags              | Extra X ldflags to pass to the go build command | No       |                                                                         |
+| musl-base-url        | Where to download musl compilers                | No       | https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
 
 ### Supported Targets
 
