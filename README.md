@@ -1,9 +1,9 @@
 # CGO Actions
 
-[![GitHub Super-Linter](https://github.com/go-cross/cgo-actions/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/go-cross/cgo-actions/actions/workflows/test-actions.yml/badge.svg)
-[![Check dist/](https://github.com/go-cross/cgo-actions/actions/workflows/check-dist.yml/badge.svg)](https://github.com/go-cross/cgo-actions/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/go-cross/cgo-actions/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/go-cross/cgo-actions/actions/workflows/codeql-analysis.yml)
+[![GitHub Super-Linter](https://github.com/OpenListTeam/cgo-actions/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
+![CI](https://github.com/OpenListTeam/cgo-actions/actions/workflows/test-actions.yml/badge.svg)
+[![Check dist/](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml)
+[![CodeQL](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml)
 
 A github actions to help build your golang program with CGO_ENABLED = 1
 
@@ -78,6 +78,7 @@ jobs:
 | output               | The output binary name                          | No       | $repo-$target$ext |
 | musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl   |
 | x-flags              | Extra X ldflags to pass to the go build command | No       |                   |
+| musl-base-url        | Where to download musl compilers                | No       |  https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
 
 ### Supported Targets
 
@@ -120,6 +121,7 @@ Use glob patterns to match the targets you want to build for.
 - linux-riscv64-musl
 - linux-s390x-musl
 - linux-amd64-musl
+- linux-loong64-musl
 - windows-arm64
 - android-386
 - android-amd64

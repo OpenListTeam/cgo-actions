@@ -36,8 +36,10 @@ export class Runner {
       }
     }
   }
+
   private input!: CommonInput
   private targets!: string[]
+
   private initInput(ctx: Context) {
     const dir = core.getInput('dir')
     const pkgs = core.getInput('packages')
@@ -59,6 +61,7 @@ export class Runner {
       })
     }
     core.info(`Input: ${JSON.stringify(this.input)}...`)
+    
     const targets = core
       .getInput('targets')
       .split(',')

@@ -28,7 +28,7 @@ inputs:
   musl-base-url:
     description: 'The base url for musl'
     required: false
-    default: 'https://github.com/go-cross/musl-toolchain-archive/releases/latest/download'
+    default: 'https://github.com/OpenListTeam/musl-compilers/releases/latest/download'
   targets:
     description: 'The targets to build for'
     required: false

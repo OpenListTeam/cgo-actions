@@ -3,69 +3,6 @@ import { registerEngine } from '../runner'
 import * as core from '@actions/core'
 import fs from 'fs'
 
-// const toolchains = {
-//   // arm
-//   // armeb-linux-musleabi-cross armeb-linux-musleabihf-cross
-//   'linux-arm64-musl': {
-//     file: 'aarch64-linux-musl-cross'
-//   },
-//   'linux-arm-musleabi': {
-//     file: 'arm-linux-musleabi-cross'
-//   },
-//   'linux-arm-musleabihf': {
-//     file: 'arm-linux-musleabihf-cross'
-//   },
-//   'linux-armel-musleabi': {
-//     file: 'armel-linux-musleabi-cross'
-//   },
-//   'linux-armel-musleabihf': {
-//     file: 'armel-linux-musleabihf-cross'
-//   },
-//   'linux-armv5l-musleabi': {
-//     file: 'armv5l-linux-musleabi-cross'
-//   },
-//   'linux-armv5l-musleabihf': {
-//     file: 'armv5l-linux-musleabihf-cross'
-//   },
-//   'linux-armv6-musleabi': {
-//     file: 'armv6-linux-musleabi-cross'
-//   },
-//   'linux-armv6-musleabihf': {
-//     file: 'armv6-linux-musleabihf-cross'
-//   },
-//   'linux-armv7l-musleabihf': {
-//     file: 'armv7l-linux-musleabihf-cross'
-//   },
-//   'linux-armv7m-musleabi': {
-//     file: 'armv7m-linux-musleabi-cross'
-//   },
-//   'linux-armv7r-musleabihf': {
-//     file: 'armv7r-linux-musleabihf-cross'
-//   },
-//   // non-arm
-//   'linux-mips-musl': {
-//     file: 'mips-linux-musl-cross'
-//   },
-//   'linux-mips64-musl': {
-//     file: 'mips64-linux-musl-cross'
-//   },
-//   'linux-mips64el-musl': {
-//     file: 'mips64el-linux-musl-cross'
-//   },
-//   'linux-mipsel-musl': {
-//     file: 'mipsel-linux-musl-cross'
-//   },
-//   'linux-ppc64le-musl': {
-//     file: 'powerpc64le-linux-musl-cross'
-//   },
-//   'linux-s390x-musl': {
-//     file: 's390x-linux-musl-cross'
-//   },
-//   'linux-amd64-musl': {
-//     file: 'x86_64-linux-musl-cross'
-//   }
-// } as Record<string, { file: string }>
-
 const all_files = [
   'aarch64-linux-musl-cross',
   'aarch64_be-linux-musl-cross',
@@ -119,7 +56,8 @@ const all_files = [
   'sh4eb-linux-musl-cross',
   'x86_64-linux-musl-cross',
   'x86_64-linux-muslx32-cross',
-  'x86_64-w64-mingw32-cross'
+  'x86_64-w64-mingw32-cross',
+  'loongarch64-linux-musl-cross'
 ]
 
 const val_files = [
@@ -140,11 +78,11 @@ const val_files = [
   'mips64-linux-musl-cross',
   'mips64el-linux-musl-cross',
   'mipsel-linux-musl-cross',
-  // 'powerpc64-linux-musl-cross',
   'powerpc64le-linux-musl-cross',
   'riscv64-linux-musl-cross',
   's390x-linux-musl-cross',
-  'x86_64-linux-musl-cross'
+  'x86_64-linux-musl-cross',
+  'loongarch64-linux-musl-cross'
 ]
 
 const exp_files = arrMinus(all_files, ...val_files)
@@ -156,7 +94,8 @@ const archMap = {
   mipsel: 'mipsle',
   powerpc64: 'ppc64',
   powerpc64le: 'ppc64le',
-  i486: '386'
+  i486: '386',
+  loongarch64: 'loong64'
 } as Record<string, string>
 const archMapRev = mapRev(archMap)
 
