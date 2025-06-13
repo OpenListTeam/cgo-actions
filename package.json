@@ -33,7 +33,7 @@
     "lint": "npx eslint",
     "package": "npx ncc build src/index.ts -o dist --source-map --license LICENSE",
     "package:watch": "npm run package -- --watch",
-    "test": "echo no test now, please add!",
+    "test": "npx jest --passWithNoTests",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "license": "MIT",
