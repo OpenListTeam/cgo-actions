@@ -50,6 +50,21 @@ jobs:
         run: pnpm run ci-test
 
   test-action:
+    strategy:
+      matrix:
+        include:
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # xgo
+            name: 'xgo'
+          - target: 'linux-*-musl*' #musl
+            name: 'musl'
+          - target: 'windows-arm64' #win-arm64
+            name: 'win-arm64'
+          - target: 'android-*' #android
+            name: 'android'
+          - target: 'freebsd-*' #freebsd
+            name: 'freebsd'
+          - target: 'windows7-*' #windows7
+            name: 'windows7'
     name: GitHub Actions Test
     runs-on: ubuntu-latest
 
@@ -58,12 +73,44 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.3'
+
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          dir: './example'
+          targets: ${{ matrix.target }}
+          musl-target-format: $os-$musl-$arch
+          x-flags: |
+            main.owner=$owner
+            main.repo=$repo
+            main.target=$target
+            main.sha=$sha
+            main.short_sha=$short_sha
+            main.pr=$pr
+            main.ext=$ext
+            main.tag=$tag
+            main.hostname=$hostname
+            main.username=$username
+            main.built_on=$built_on
+            main.built_at=$built_at
+            main.git_author=$git_author
+            main.git_commit=$git_commit
+            main.go_version=$go_version
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: |
+          echo "${{ steps.test-action.outputs.files }}"
+          echo "--------------------------------"
+          ls -lh bin/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}_${{ github.sha }}
+          path: bin/
