@@ -36,19 +36,13 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
       - name: Install Dependencies
         id: install
-        run: pnpm i
+        run: npm install
 
       - name: Build dist/ Directory
         id: build
-        run: pnpm run bundle
+        run: npm run bundle
 
       # This will fail the workflow if the `dist/` directory is different than
       # expected.
