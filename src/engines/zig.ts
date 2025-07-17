@@ -89,7 +89,7 @@ function engineGen(files: string[]) {
       if (os === 'darwin') {
         const sdk = await setupMacOSSDK()
         console.log(`Using macOS SDK at ${sdk.sdk}`)
-        const macOSSDKLinkFlags = `--extldflags '-L${sdk.lib}'`
+        const macOSSDKLinkFlags = `--extldflags '-L${sdk.lib} -iframework${sdk.frameworks} -isysroot ${sdk.sdk}'`
         core.info('Setting macOS SDK link flags ...')
         if (flags.flags.includes(macOSSDKLinkFlags)) {
           core.info('Already set  macOS SDK link flags.')

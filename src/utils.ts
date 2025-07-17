@@ -74,6 +74,7 @@ export async function setupMacOSSDK() {
     bin: `/opt/${OSX_SDK}/usr/bin`,
     lib: `/opt/${OSX_SDK}/usr/lib`,
     include: `/opt/${OSX_SDK}/usr/include`,
+    frameworks: `/opt/${OSX_SDK}/System/Library/Frameworks`,
     sdk: `/opt/${OSX_SDK}`
   }
 }

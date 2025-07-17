@@ -43789,6 +43789,7 @@ async function setupMacOSSDK() {
         bin: `/opt/${OSX_SDK}/usr/bin`,
         lib: `/opt/${OSX_SDK}/usr/lib`,
         include: `/opt/${OSX_SDK}/usr/include`,
+        frameworks: `/opt/${OSX_SDK}/System/Library/Frameworks`,
         sdk: `/opt/${OSX_SDK}`
     };
 }
@@ -44299,7 +44300,7 @@ function zig_engineGen(files) {
             if (os === 'darwin') {
                 const sdk = await setupMacOSSDK();
                 console.log(`Using macOS SDK at ${sdk.sdk}`);
-                const macOSSDKLinkFlags = `--extldflags '-L${sdk.lib}'`;
+                const macOSSDKLinkFlags = `--extldflags '-L${sdk.lib} -iframework${sdk.frameworks} -isysroot ${sdk.sdk}'`;
                 core.info('Setting macOS SDK link flags ...');
                 if (flags.flags.includes(macOSSDKLinkFlags)) {
                     core.info('Already set  macOS SDK link flags.');
