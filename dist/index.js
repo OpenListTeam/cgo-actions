@@ -44172,7 +44172,6 @@ registerEngine({
     targets: ['windows-arm64'],
     async prepare(input) {
         console.log(input.output);
-        await $$ `sudo snap install zig --classic --beta`;
         if (!external_fs_default().existsSync('/usr/local/bin')) {
             external_fs_default().mkdirSync('/usr/local/bin', { recursive: true });
         }
@@ -44245,7 +44244,6 @@ function zig_engineGen(files) {
         targets: files.map(zigTargetToCGoTarget),
         async prepare(input) {
             console.log(input.output);
-            await $$ `sudo snap install zig --classic --beta`; // Ensure Zig is installed
             if (!external_fs_default().existsSync('/usr/local/bin')) {
                 external_fs_default().mkdirSync('/usr/local/bin', { recursive: true });
             }
@@ -44386,7 +44384,6 @@ registerEngine({
     targets: ['windows7-386', 'windows7-amd64'],
     async prepare(input) {
         console.log(input.output);
-        await $$ `sudo snap install zig --classic --beta`;
         await setupWin7Go();
     },
     async run(input) {

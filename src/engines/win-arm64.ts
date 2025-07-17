@@ -14,7 +14,6 @@ registerEngine({
   targets: ['windows-arm64'],
   async prepare(input) {
     console.log(input.output)
-    await $$`sudo snap install zig --classic --beta`
     if (!fs.existsSync('/usr/local/bin')) {
       fs.mkdirSync('/usr/local/bin', { recursive: true })
     }

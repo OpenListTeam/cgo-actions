@@ -54,7 +54,6 @@ function engineGen(files: string[]) {
     targets: files.map(zigTargetToCGoTarget),
     async prepare(input) {
       console.log(input.output)
-      await $$`sudo snap install zig --classic --beta` // Ensure Zig is installed
       if (!fs.existsSync('/usr/local/bin')) {
         fs.mkdirSync('/usr/local/bin', { recursive: true })
       }
