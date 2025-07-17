@@ -44231,13 +44231,17 @@ const zig_archMap = {
     loongarch64: 'loong64'
 };
 const zig_archMapRev = mapRev(zig_archMap);
+const zig_osMap = {
+    macos: 'darwin'
+};
+const zig_osMapRev = mapRev(zig_osMap);
 function zigTargetToCGoTarget(zigt) {
     const [arch, os, libc] = zigt.split('-');
-    return `${os}-${zig_archMap[arch] ?? arch}-${libc}`;
+    return `${zig_osMap[os] ?? os}-${zig_archMap[arch] ?? arch}-${libc}`;
 }
 function cgoTargetToZigTarget(target) {
     const [os, arch, libc] = target.split('-');
-    return `${zig_archMapRev[arch] ?? arch}-${os}-${libc}`;
+    return `${zig_archMapRev[arch] ?? arch}-${zig_osMapRev[os] ?? os}-${libc}`;
 }
 function zig_engineGen(files) {
     registerEngine({

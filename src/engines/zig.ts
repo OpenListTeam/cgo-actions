@@ -39,14 +39,19 @@ const archMap = {
 } as Record<string, string>
 const archMapRev = mapRev(archMap)
 
+const osMap = {
+  macos: 'darwin'
+} as Record<string, string>
+const osMapRev = mapRev(osMap)
+
 function zigTargetToCGoTarget(zigt: string) {
   const [arch, os, libc] = zigt.split('-')
-  return `${os}-${archMap[arch] ?? arch}-${libc}`
+  return `${osMap[os] ?? os}-${archMap[arch] ?? arch}-${libc}`
 }
 
 function cgoTargetToZigTarget(target: string) {
   const [os, arch, libc] = target.split('-')
-  return `${archMapRev[arch] ?? arch}-${os}-${libc}`
+  return `${archMapRev[arch] ?? arch}-${osMapRev[os] ?? os}-${libc}`
 }
 
 function engineGen(files: string[]) {
