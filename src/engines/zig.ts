@@ -93,6 +93,7 @@ function engineGen(files: string[]) {
           env.CGO_CFLAGS = ''
         }
         env.CGO_CFLAGS += ` -L${sdk.lib}`
+        env.LD_LIBRARY_PATH = sdk.lib
       }
       if (arch === 'arm') {
         env.GOARCH = 'arm'
