@@ -89,13 +89,11 @@ function engineGen(files: string[]) {
         env.GOARCH = 'arm'
         env.GOARM = '7'
       }
-      if (
-        arch === 'mips' ||
-        arch === 'mipsle' ||
-        arch === 'mips64' ||
-        arch === 'mips64le'
-      ) {
+      if (arch === 'mips' || arch === 'mipsle') {
         env.GOMIPS = 'softfloat'
+      }
+      if (arch === 'mips64' || arch === 'mips64le') {
+        env.GOMIPS64 = 'softfloat'
       }
       core.info(`Building with env:\n${JSON.stringify(env, null, 2)}...`)
       const flags = input.flags
