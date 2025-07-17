@@ -43721,7 +43721,11 @@ const {
 } = getIpcExport();
 
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(9896);
+var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 ;// CONCATENATED MODULE: ./src/utils.ts
+
 
 function engineKey(engine) {
     return engine.targets.join(',');
@@ -43768,12 +43772,29 @@ function calFlags(flags) {
     }
     return res;
 }
+async function setupMacOSSDK() {
+    const OSX_SDK = 'MacOSX15.5.sdk';
+    const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}.tar.xz`;
+    // Download and extract the SDK
+    if (!external_fs_default().existsSync(`/opt/${OSX_SDK}`)) {
+        console.log(`Downloading macOS SDK from ${OSX_SDK_URL}...`);
+        const sdkFile = `/tmp/${OSX_SDK}.tar.xz`;
+        await $$ `curl -L -o ${sdkFile} ${OSX_SDK_URL}`;
+        console.log(`Extracting macOS SDK to /opt/${OSX_SDK}...`);
+        await $$ `sudo tar -xf ${sdkFile} -C /opt`;
+        external_fs_default().rmSync(sdkFile);
+    }
+    // return bin path and lib path
+    return {
+        bin: `/opt/${OSX_SDK}/usr/bin`,
+        lib: `/opt/${OSX_SDK}/usr/lib`,
+        include: `/opt/${OSX_SDK}/usr/include`,
+        sdk: `/opt/${OSX_SDK}`
+    };
+}
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(9896);
-var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 // EXTERNAL MODULE: ./node_modules/picomatch/index.js
 var picomatch = __nccwpck_require__(4006);
 var picomatch_default = /*#__PURE__*/__nccwpck_require__.n(picomatch);
@@ -44274,6 +44295,23 @@ function zig_engineGen(files) {
                 GOARCH: arch,
                 CC: `/usr/local/bin/${zig_target}-zcc`
             };
+            const flags = input.flags;
+            if (os === 'darwin') {
+                const sdk = await setupMacOSSDK();
+                console.log(`Using macOS SDK at ${sdk.sdk}`);
+                flags.extra['-I'] = {
+                    values: [sdk.include],
+                    connector: '',
+                    quote: '',
+                    separator: undefined
+                };
+                flags.extra['-L'] = {
+                    values: [sdk.lib],
+                    connector: '',
+                    quote: '',
+                    separator: undefined
+                };
+            }
             if (arch === 'arm') {
                 env.GOARCH = 'arm';
                 env.GOARM = '7';
@@ -44285,7 +44323,6 @@ function zig_engineGen(files) {
                 env.GOMIPS64 = 'softfloat';
             }
             core.info(`Building with env:\n${JSON.stringify(env, null, 2)}...`);
-            const flags = input.flags;
             await input.$({
                 env: env
             }) `go build -o ${os == 'windows' ? TempBinName + '.exe' : TempBinName} ${calFlags(flags)} ${input.pkgs}`;

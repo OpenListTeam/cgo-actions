@@ -1,5 +1,6 @@
 import { $ } from 'execa'
 import { Engine, Flags, Input } from './types'
+import fs from 'fs'
 
 export function engineKey(engine: Engine) {
   return engine.targets.join(',')
@@ -54,4 +55,25 @@ export function calFlags(flags: Flags) {
     }
   }
   return res
+}
+
+export async function setupMacOSSDK() {
+  const OSX_SDK = 'MacOSX15.5.sdk'
+  const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}.tar.xz`
+  // Download and extract the SDK
+  if (!fs.existsSync(`/opt/${OSX_SDK}`)) {
+    console.log(`Downloading macOS SDK from ${OSX_SDK_URL}...`)
+    const sdkFile = `/tmp/${OSX_SDK}.tar.xz`
+    await $$`curl -L -o ${sdkFile} ${OSX_SDK_URL}`
+    console.log(`Extracting macOS SDK to /opt/${OSX_SDK}...`)
+    await $$`sudo tar -xf ${sdkFile} -C /opt`
+    fs.rmSync(sdkFile)
+  }
+  // return bin path and lib path
+  return {
+    bin: `/opt/${OSX_SDK}/usr/bin`,
+    lib: `/opt/${OSX_SDK}/usr/lib`,
+    include: `/opt/${OSX_SDK}/usr/include`,
+    sdk: `/opt/${OSX_SDK}`
+  }
 }

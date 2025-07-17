@@ -61,9 +61,6 @@ jobs:
             name: 'windows7'
     name: GitHub Actions Test
     runs-on: ubuntu-latest
-    container:
-      image: crazymax/osxcross:edge-ubuntu
-      options: --privileged
 
     steps:
       - name: Checkout

@@ -1,5 +1,5 @@
 import { registerEngine } from '../runner'
-import { $$, calFlags, TempBinName, mapRev } from '../utils'
+import { $$, calFlags, TempBinName, mapRev, setupMacOSSDK } from '../utils'
 import fs from 'fs'
 import * as core from '@actions/core'
 
@@ -85,6 +85,23 @@ function engineGen(files: string[]) {
         GOARCH: arch,
         CC: `/usr/local/bin/${zig_target}-zcc`
       } as Record<string, string>
+      const flags = input.flags
+      if (os === 'darwin') {
+        const sdk = await setupMacOSSDK()
+        console.log(`Using macOS SDK at ${sdk.sdk}`)
+        flags.extra['-I'] = {
+          values: [sdk.include],
+          connector: '',
+          quote: '',
+          separator: undefined
+        }
+        flags.extra['-L'] = {
+          values: [sdk.lib],
+          connector: '',
+          quote: '',
+          separator: undefined
+        }
+      }
       if (arch === 'arm') {
         env.GOARCH = 'arm'
         env.GOARM = '7'
@@ -96,7 +113,6 @@ function engineGen(files: string[]) {
         env.GOMIPS64 = 'softfloat'
       }
       core.info(`Building with env:\n${JSON.stringify(env, null, 2)}...`)
-      const flags = input.flags
       await input.$({
         env: env
       })`go build -o ${os == 'windows' ? TempBinName + '.exe' : TempBinName} ${calFlags(flags)} ${input.pkgs}`

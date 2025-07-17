@@ -7,7 +7,7 @@ export type Flags = {
     [key: string]: {
       values: string[]
       separator?: string // separate if undefined
-      connector: '=' | ' '
+      connector: '=' | ' ' | ''
       quote: "'" | '"' | ''
     }
   }
