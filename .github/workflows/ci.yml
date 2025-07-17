@@ -62,7 +62,7 @@ jobs:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/crazy-max/osxcross:latest-ubuntu
+      image: crazymax/osxcross:edge-ubuntu
       options: --privileged
 
     steps:
