@@ -44302,7 +44302,7 @@ function zig_engineGen(files) {
                 if (env.CGO_CFLAGS === undefined) {
                     env.CGO_CFLAGS = '';
                 }
-                env.CGO_CFLAGS += ` -L${sdk.lib} -I${sdk.include}`;
+                env.CGO_CFLAGS += ` -L${sdk.lib}`;
             }
             if (arch === 'arm') {
                 env.GOARCH = 'arm';
