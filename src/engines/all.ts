@@ -1,6 +1,6 @@
 import './android'
 import './musl'
 import './win-arm64'
-import './xgo'
+//import './xgo'
 import './freebsd'
 import './win7'

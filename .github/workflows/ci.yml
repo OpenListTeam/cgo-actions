@@ -53,8 +53,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # xgo
-            name: 'xgo'
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # zig
+            name: 'zig'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
           - target: 'windows-arm64' #win-arm64
