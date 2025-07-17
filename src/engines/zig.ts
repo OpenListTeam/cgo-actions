@@ -89,12 +89,10 @@ function engineGen(files: string[]) {
       if (os === 'darwin') {
         const sdk = await setupMacOSSDK()
         console.log(`Using macOS SDK at ${sdk.sdk}`)
-        flags.extra['-ldflags'] = {
-          values: [`-L${sdk.lib}`, `-I${sdk.include}`],
-          connector: '=',
-          quote: '',
-          separator: undefined
+        if (env.CGO_CFLAGS === undefined) {
+          env.CGO_CFLAGS = ''
         }
+        env.CGO_CFLAGS += ` -L${sdk.lib} -I${sdk.include}`
       }
       if (arch === 'arm') {
         env.GOARCH = 'arm'
