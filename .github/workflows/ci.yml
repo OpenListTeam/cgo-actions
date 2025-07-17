@@ -27,33 +27,27 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
       - name: Install Dependencies
         id: npm-ci
-        run: pnpm i
+        run: npm install
 
       - name: Check Format
         id: npm-format-check
-        run: pnpm run format:check
+        run: npm run format:check
 
       - name: Lint
         id: npm-lint
-        run: pnpm run lint
+        run: npm run lint
 
       - name: Test
         id: npm-ci-test
-        run: pnpm run ci-test
+        run: npm run ci-test
 
   test-action:
     strategy:
       matrix:
         include:
-          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # zig
+          - target: 'linux-*-gnu*' # zig
             name: 'zig'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
