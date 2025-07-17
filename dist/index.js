@@ -44299,11 +44299,25 @@ function zig_engineGen(files) {
             if (os === 'darwin') {
                 const sdk = await setupMacOSSDK();
                 console.log(`Using macOS SDK at ${sdk.sdk}`);
-                if (env.CGO_CFLAGS === undefined) {
-                    env.CGO_CFLAGS = '';
+                const macOSSDKLinkFlags = `--extldflags '-L${sdk.lib}'`;
+                core.info('Setting macOS SDK link flags ...');
+                if (flags.flags.includes(macOSSDKLinkFlags)) {
+                    core.info('Already set  macOS SDK link flags.');
                 }
-                env.CGO_CFLAGS += ` -L${sdk.lib}`;
-                env.LD_LIBRARY_PATH = sdk.lib;
+                else {
+                    const key = '-ldflags';
+                    if (flags.extra[key]) {
+                        flags.extra[key].values.push(macOSSDKLinkFlags);
+                    }
+                    else {
+                        flags.extra[key] = {
+                            values: [macOSSDKLinkFlags],
+                            separator: ' ',
+                            connector: '=',
+                            quote: ''
+                        };
+                    }
+                }
             }
             if (arch === 'arm') {
                 env.GOARCH = 'arm';
