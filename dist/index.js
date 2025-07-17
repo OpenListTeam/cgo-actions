@@ -44299,15 +44299,9 @@ function zig_engineGen(files) {
             if (os === 'darwin') {
                 const sdk = await setupMacOSSDK();
                 console.log(`Using macOS SDK at ${sdk.sdk}`);
-                flags.extra['-I'] = {
-                    values: [sdk.include],
-                    connector: '',
-                    quote: '',
-                    separator: undefined
-                };
-                flags.extra['-L'] = {
-                    values: [sdk.lib],
-                    connector: '',
+                flags.extra['-ldflags'] = {
+                    values: [`-L${sdk.lib}`, `-I${sdk.include}`],
+                    connector: '=',
                     quote: '',
                     separator: undefined
                 };
