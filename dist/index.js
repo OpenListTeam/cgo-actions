@@ -44276,6 +44276,12 @@ function zig_engineGen(files) {
                 env.GOARCH = 'arm';
                 env.GOARM = '7';
             }
+            if (arch === 'mips' ||
+                arch === 'mipsle' ||
+                arch === 'mips64' ||
+                arch === 'mips64le') {
+                env.GOMIPS = 'softfloat';
+            }
             core.info(`Building with env:\n${JSON.stringify(env, null, 2)}...`);
             const flags = input.flags;
             await input.$({
