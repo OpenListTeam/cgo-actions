@@ -85,7 +85,7 @@ jobs:
         with:
           dir: './example'
           targets: ${{ matrix.target }}
-          musl-target-format: $os-$musl-$arch
+          libc-target-format: $os-$libc-$arch
           x-flags: |
             main.owner=$owner
             main.repo=$repo
