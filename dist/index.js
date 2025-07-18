@@ -44192,6 +44192,50 @@ registerEngine({
     }
 });
 
+;// CONCATENATED MODULE: ./src/engines/xgo.ts
+
+
+const targetMap = {
+    'darwin-amd64': 'darwin/amd64',
+    'darwin-arm64': 'darwin/arm64',
+    // 'linux-386': 'linux/386',
+    // 'linux-amd64': 'linux/amd64',
+    // 'linux-arm-5': 'linux/arm-5',
+    // 'linux-arm-6': 'linux/arm-6',
+    // 'linux-arm-7': 'linux/arm-7',
+    // 'linux-arm64': 'linux/arm64',
+    // 'linux-mips': 'linux/mips',
+    // 'linux-mipsle': 'linux/mipsle',
+    // 'linux-mips64': 'linux/mips64',
+    // 'linux-mips64le': 'linux/mips64le',
+    'linux-ppc64le': 'linux/ppc64le'
+    // 'linux-riscv64': 'linux/riscv64',
+    // 'linux-s390x': 'linux/s390x',
+    // 'windows-386': 'windows/386',
+    // 'windows-amd64': 'windows/amd64'
+};
+registerEngine({
+    targets: Object.keys(targetMap),
+    async prepare(input) {
+        console.log(input.output);
+        // docker pull crazymax/xgo:latest
+        await $$ `docker pull crazymax/xgo:latest`;
+        // go install github.com/crazy-max/xgo@latest
+        await $$ `go install github.com/crazy-max/xgo@latest`;
+    },
+    async run(input) {
+        const target = targetMap[input.target];
+        await input.$ `xgo -targets=${target} -out ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+        const curBin = `${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`;
+        const outBin = curBin.replace(`-${input.target}`, '');
+        // renameSync(
+        //   `${input.dir}/${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`,
+        //   outBin
+        // )
+        await input.$ `mv ${curBin} ${outBin}`;
+    }
+});
+
 ;// CONCATENATED MODULE: ./src/engines/zig.ts
 
 
@@ -44404,97 +44448,10 @@ registerEngine({
     }
 });
 
-;// CONCATENATED MODULE: ./src/engines/osxcross.ts
-// This file provides build for macOS
-
-
-
-
-async function setupMacOSSDK(basedir) {
-    const OSX_SDK = 'MacOSX15.5.sdk.tar.xz';
-    const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}`;
-    // Download and extract the SDK
-    if (!external_fs_default().existsSync(`${basedir}/${OSX_SDK}`)) {
-        console.log(`Downloading macOS SDK from ${OSX_SDK_URL}...`);
-        const sdkFile = `${basedir}/${OSX_SDK}`;
-        await $$ `curl -fsSL -o ${sdkFile} ${OSX_SDK_URL}`;
-    }
-    return {
-        sdk: `${basedir}/${OSX_SDK}`
-    };
-}
-async function setupOSXCross() {
-    const downloadUrl = 'https://github.com/tpoechtrager/osxcross/archive/refs/heads/master.tar.gz';
-    const osxcrossDir = '/opt/osxcross';
-    if (!external_fs_default().existsSync(osxcrossDir)) {
-        await $$ `mkdir -p ${osxcrossDir}`;
-        await $$ `curl -fsSL -o /tmp/osxcross.tar.gz ${downloadUrl}`;
-        await $$ `tar -xzf /tmp/osxcross.tar.gz -C ${osxcrossDir} --strip-components=1`;
-        await $$ `rm /tmp/osxcross.tar.gz`;
-        await setupMacOSSDK(`${osxcrossDir}/tarballs`);
-        // Install deps
-        await $$ `sudo apt update`;
-        await $$ `sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
-        // Remove old clang if it exists
-        await execa({
-            shell: '/usr/bin/bash',
-            stdio: 'inherit'
-        }) `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`;
-        await execa({
-            shell: '/usr/bin/bash',
-            stdio: 'inherit'
-        }) `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`;
-        await execa({
-            shell: '/usr/bin/bash',
-            stdio: 'inherit'
-        }) `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`;
-        await execa({
-            shell: '/usr/bin/bash',
-            stdio: 'inherit'
-        }) `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`;
-        // Build OSXCross
-        await execa({
-            shell: '/usr/bin/bash',
-            stdio: 'inherit'
-        }) `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
-    }
-    return `${osxcrossDir}/target`;
-}
-const appleTargetMap = {
-    'apple-x86_64': 'o64',
-    'apple-arm64': 'oa64'
-};
-const osxcross_archMap = {
-    x86_64: 'amd64',
-    arm64: 'arm64'
-};
-registerEngine({
-    targets: Object.keys(appleTargetMap),
-    async prepare(input) {
-        console.log(input.output);
-    },
-    async run(input) {
-        const sdk_dir = await setupOSXCross();
-        const target = input.target;
-        const arch = osxcross_archMap[target.split('-')[1]];
-        const osxcrossTarget = appleTargetMap[target];
-        await input.$({
-            env: {
-                CGO_ENABLED: '1',
-                GOOS: 'darwin',
-                GOARCH: arch,
-                CC: `${sdk_dir}/bin/${osxcrossTarget}-clang`,
-                CXX: `${sdk_dir}/bin/${osxcrossTarget}-clang++`
-            }
-        }) `go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
-    }
-});
-
 ;// CONCATENATED MODULE: ./src/engines/all.ts
 
 
 
-//import './xgo'
 
 
 
