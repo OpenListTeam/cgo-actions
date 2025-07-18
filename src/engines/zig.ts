@@ -1,5 +1,5 @@
 import { registerEngine } from '../runner'
-import { $$, calFlags, TempBinName, mapRev } from '../utils'
+import { $$, calFlags, TempBinName, mapRev, checkZigCompiler } from '../utils'
 import fs from 'fs'
 import * as core from '@actions/core'
 
@@ -56,6 +56,7 @@ function engineGen(files: string[]) {
     targets: files.map(zigTargetToCGoTarget),
     async prepare(input) {
       console.log(input.output)
+      await checkZigCompiler()
       if (!fs.existsSync('/usr/local/bin')) {
         fs.mkdirSync('/usr/local/bin', { recursive: true })
       }

@@ -43768,6 +43768,15 @@ function calFlags(flags) {
     }
     return res;
 }
+async function checkZigCompiler() {
+    try {
+        await $$('zig', ['version']);
+    }
+    catch (e) {
+        console.log(`Zig compiler not found, install zig now. ... Detail error: ${e}`);
+        await $$ `sudo snap install zig --classic --beta`;
+    }
+}
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
@@ -44172,6 +44181,7 @@ registerEngine({
     targets: ['windows-arm64'],
     async prepare(input) {
         console.log(input.output);
+        await checkZigCompiler();
         if (!external_fs_default().existsSync('/usr/local/bin')) {
             external_fs_default().mkdirSync('/usr/local/bin', { recursive: true });
         }
@@ -44289,6 +44299,7 @@ function zig_engineGen(files) {
         targets: files.map(zigTargetToCGoTarget),
         async prepare(input) {
             console.log(input.output);
+            await checkZigCompiler();
             if (!external_fs_default().existsSync('/usr/local/bin')) {
                 external_fs_default().mkdirSync('/usr/local/bin', { recursive: true });
             }
@@ -44429,6 +44440,7 @@ registerEngine({
     targets: ['windows7-386', 'windows7-amd64'],
     async prepare(input) {
         console.log(input.output);
+        await checkZigCompiler();
         await setupWin7Go();
     },
     async run(input) {

@@ -1,4 +1,4 @@
-import { $$, calFlags, TempBinName } from '../utils'
+import { $$, calFlags, TempBinName, checkZigCompiler } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 import { $ } from 'execa'
@@ -48,6 +48,7 @@ registerEngine({
   targets: ['windows7-386', 'windows7-amd64'],
   async prepare(input) {
     console.log(input.output)
+    await checkZigCompiler()
     await setupWin7Go()
   },
   async run(input) {

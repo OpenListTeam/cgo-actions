@@ -55,3 +55,14 @@ export function calFlags(flags: Flags) {
   }
   return res
 }
+
+export async function checkZigCompiler() {
+  try {
+    await $$('zig', ['version'])
+  } catch (e) {
+    console.log(
+      `Zig compiler not found, install zig now. ... Detail error: ${e}`
+    )
+    await $$`sudo snap install zig --classic --beta`
+  }
+}

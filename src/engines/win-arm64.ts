@@ -1,4 +1,4 @@
-import { $$, calFlags, TempBinName } from '../utils'
+import { $$, calFlags, TempBinName, checkZigCompiler } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 
@@ -14,6 +14,7 @@ registerEngine({
   targets: ['windows-arm64'],
   async prepare(input) {
     console.log(input.output)
+    await checkZigCompiler()
     if (!fs.existsSync('/usr/local/bin')) {
       fs.mkdirSync('/usr/local/bin', { recursive: true })
     }
