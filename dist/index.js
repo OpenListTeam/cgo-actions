@@ -43721,11 +43721,7 @@ const {
 } = getIpcExport();
 
 
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(9896);
-var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 ;// CONCATENATED MODULE: ./src/utils.ts
-
 
 function engineKey(engine) {
     return engine.targets.join(',');
@@ -43772,30 +43768,12 @@ function calFlags(flags) {
     }
     return res;
 }
-async function setupMacOSSDK() {
-    const OSX_SDK = 'MacOSX15.5.sdk';
-    const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}.tar.xz`;
-    // Download and extract the SDK
-    if (!external_fs_default().existsSync(`/opt/${OSX_SDK}`)) {
-        console.log(`Downloading macOS SDK from ${OSX_SDK_URL}...`);
-        const sdkFile = `/tmp/${OSX_SDK}.tar.xz`;
-        await $$ `curl -L -o ${sdkFile} ${OSX_SDK_URL}`;
-        console.log(`Extracting macOS SDK to /opt/${OSX_SDK}...`);
-        await $$ `sudo tar -xf ${sdkFile} -C /opt`;
-        external_fs_default().rmSync(sdkFile);
-    }
-    // return bin path and lib path
-    return {
-        bin: `/opt/${OSX_SDK}/usr/bin`,
-        lib: `/opt/${OSX_SDK}/usr/lib`,
-        include: `/opt/${OSX_SDK}/usr/include`,
-        frameworks: `/opt/${OSX_SDK}/System/Library/Frameworks`,
-        sdk: `/opt/${OSX_SDK}`
-    };
-}
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(9896);
+var external_fs_default = /*#__PURE__*/__nccwpck_require__.n(external_fs_);
 // EXTERNAL MODULE: ./node_modules/picomatch/index.js
 var picomatch = __nccwpck_require__(4006);
 var picomatch_default = /*#__PURE__*/__nccwpck_require__.n(picomatch);
@@ -44220,6 +44198,7 @@ registerEngine({
 
 
 // See https://ziglang.org/learn/overview/#wide-range-of-targets-supported:~:text=Tier%203%2B%20target.-,Zig%20ships%20with%20libc,-You%20can%20find
+// ppc64le removed, see https://github.com/ziglang/zig/issues/22081
 const zig_targets = [
     'x86-linux-gnu',
     'x86_64-linux-gnu',
@@ -44293,29 +44272,6 @@ function zig_engineGen(files) {
                 CC: `/usr/local/bin/${zig_target}-zcc`
             };
             const flags = input.flags;
-            if (os === 'darwin') {
-                const sdk = await setupMacOSSDK();
-                console.log(`Using macOS SDK at ${sdk.sdk}`);
-                const macOSSDKLinkFlags = `--extldflags '-isysroot ${sdk.sdk} -iframework ${sdk.frameworks}'`;
-                core.info('Setting macOS SDK link flags ...');
-                if (flags.flags.includes(macOSSDKLinkFlags)) {
-                    core.info('Already set  macOS SDK link flags.');
-                }
-                else {
-                    const key = '-ldflags';
-                    if (flags.extra[key]) {
-                        flags.extra[key].values.push(macOSSDKLinkFlags);
-                    }
-                    else {
-                        flags.extra[key] = {
-                            values: [macOSSDKLinkFlags],
-                            separator: ' ',
-                            connector: '=',
-                            quote: ''
-                        };
-                    }
-                }
-            }
             if (arch === 'arm') {
                 env.GOARCH = 'arm';
                 env.GOARM = '7';
@@ -44448,11 +44404,79 @@ registerEngine({
     }
 });
 
+;// CONCATENATED MODULE: ./src/engines/osxcross.ts
+// This file provides build for macOS
+
+
+
+async function setupMacOSSDK(basedir) {
+    const OSX_SDK = 'MacOSX15.5.sdk.tar.xz';
+    const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}`;
+    // Download and extract the SDK
+    if (!external_fs_default().existsSync(`${basedir}/${OSX_SDK}`)) {
+        console.log(`Downloading macOS SDK from ${OSX_SDK_URL}...`);
+        const sdkFile = `${basedir}/${OSX_SDK}`;
+        await $$ `curl -fsSL -o ${sdkFile} ${OSX_SDK_URL}`;
+    }
+    return {
+        sdk: `${basedir}/${OSX_SDK}`
+    };
+}
+async function setupOSXCross() {
+    const downloadUrl = 'https://github.com/tpoechtrager/osxcross/archive/refs/heads/master.tar.gz';
+    const osxcrossDir = '/opt/osxcross';
+    if (!external_fs_default().existsSync(osxcrossDir)) {
+        await $$ `mkdir -p ${osxcrossDir}`;
+        await $$ `curl -fsSL ${downloadUrl} | tar -xz -C ${osxcrossDir} --strip-components=1`;
+    }
+    await setupMacOSSDK(`${osxcrossDir}/tarballs`);
+    // Install deps
+    await $$ `sudo apt update && sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
+    // Remove old clang if it exists
+    await $$ `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`;
+    await $$ `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`;
+    await $$ `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`;
+    await $$ `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`;
+    // Build OSXCross
+    await $$ `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
+    return `${osxcrossDir}/target`;
+}
+const appleTargetMap = {
+    'apple-x86_64': 'o64',
+    'apple-arm64': 'oa64'
+};
+const osxcross_archMap = {
+    x86_64: 'amd64',
+    arm64: 'arm64'
+};
+registerEngine({
+    targets: Object.keys(appleTargetMap),
+    async prepare(input) {
+        console.log(input.output);
+    },
+    async run(input) {
+        const sdk_dir = await setupOSXCross();
+        const target = input.target;
+        const arch = osxcross_archMap[target.split('-')[1]];
+        const osxcrossTarget = appleTargetMap[target];
+        await input.$({
+            env: {
+                CGO_ENABLED: '1',
+                GOOS: 'darwin',
+                GOARCH: arch,
+                CC: `${sdk_dir}/bin/${osxcrossTarget}-clang`,
+                CXX: `${sdk_dir}/bin/${osxcrossTarget}-clang++`
+            }
+        }) `go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
+    }
+});
+
 ;// CONCATENATED MODULE: ./src/engines/all.ts
 
 
 
 //import './xgo'
+
 
 
 

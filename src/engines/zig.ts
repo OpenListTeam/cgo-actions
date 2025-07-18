@@ -1,9 +1,10 @@
 import { registerEngine } from '../runner'
-import { $$, calFlags, TempBinName, mapRev, setupMacOSSDK } from '../utils'
+import { $$, calFlags, TempBinName, mapRev } from '../utils'
 import fs from 'fs'
 import * as core from '@actions/core'
 
 // See https://ziglang.org/learn/overview/#wide-range-of-targets-supported:~:text=Tier%203%2B%20target.-,Zig%20ships%20with%20libc,-You%20can%20find
+// ppc64le removed, see https://github.com/ziglang/zig/issues/22081
 const zig_targets = [
   'x86-linux-gnu',
   'x86_64-linux-gnu',
@@ -82,27 +83,6 @@ function engineGen(files: string[]) {
         CC: `/usr/local/bin/${zig_target}-zcc`
       } as Record<string, string>
       const flags = input.flags
-      if (os === 'darwin') {
-        const sdk = await setupMacOSSDK()
-        console.log(`Using macOS SDK at ${sdk.sdk}`)
-        const macOSSDKLinkFlags = `--extldflags '-isysroot ${sdk.sdk} -iframework ${sdk.frameworks}'`
-        core.info('Setting macOS SDK link flags ...')
-        if (flags.flags.includes(macOSSDKLinkFlags)) {
-          core.info('Already set  macOS SDK link flags.')
-        } else {
-          const key = '-ldflags'
-          if (flags.extra[key]) {
-            flags.extra[key].values.push(macOSSDKLinkFlags)
-          } else {
-            flags.extra[key] = {
-              values: [macOSSDKLinkFlags],
-              separator: ' ',
-              connector: '=',
-              quote: ''
-            }
-          }
-        }
-      }
       if (arch === 'arm') {
         env.GOARCH = 'arm'
         env.GOARM = '7'

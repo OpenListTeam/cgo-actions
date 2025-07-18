@@ -47,8 +47,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: '(linux-*|windows-*|darwin-*)-(gnu*|none)' # zig
+          - target: '(linux-*|windows-*)-(gnu*|none)' # zig
             name: 'zig'
+          - target: 'apple-*' # apple
+            name: 'osxcross'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
           - target: 'windows-arm64' #win-arm64
