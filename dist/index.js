@@ -44221,8 +44221,6 @@ registerEngine({
 
 // See https://ziglang.org/learn/overview/#wide-range-of-targets-supported:~:text=Tier%203%2B%20target.-,Zig%20ships%20with%20libc,-You%20can%20find
 const zig_targets = [
-    'x86_64-macos-none',
-    'aarch64-macos-none',
     'x86-linux-gnu',
     'x86_64-linux-gnu',
     'arm-linux-gnueabi',
