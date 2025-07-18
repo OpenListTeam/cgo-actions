@@ -32,20 +32,11 @@ inputs:
   targets:
     description: 'The targets to build for'
     required: false
-    # android-386, android-amd64, android-arm, android-arm64
-    # darwin-amd64, darwin-arm64
-    # linux-386, linux-amd64, linux-arm-5, linux-arm-6, linux-arm-7, linux-arm64
-    # linux-mips, linux-mips64, linux-mips64le, linux-mipsle
-    # linux-ppc64le, linux-riscv64 ,linux-s390x
-    # linux-amd64-musl, linux-arm64-musl, linux-mips-musl, linux-mips64-musl, linux-mips64le-musl, linux-mipsel-musl, linux-ppc64le-musl, linux-s390x-musl
-    # linux-arm-musleabi, linux-armel-musleabi, linux-armv5l-musleabi, linux-armv6-musleabi, linux-armv7m-musleabi
-    # linux-arm-musleabihf, linux-armel-musleabihf, linux-armv5l-musleabihf, linux-armv6-musleabihf, linux-armv7l-musleabihf, linux-armv7r-musleabihf
-    # windows-386, windows-amd64, windows-arm64
     default: '*'
-  musl-target-format:
-    description: 'The format for musl target'
+  libc-target-format:
+    description: 'The format for targets with different libc'
     required: false
-    default: '$os-$arch-$musl'
+    default: '$os-$arch-$libc'
   out-dir:
     description: 'The output directory'
     required: false

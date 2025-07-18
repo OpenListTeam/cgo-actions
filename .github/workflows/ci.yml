@@ -49,6 +49,8 @@ jobs:
         include:
           - target: '(linux-*|windows-*)-(gnu*|none)' # zig
             name: 'zig'
+          - target: 'linux-armv5-gnueabi|linux-armv6-gnueabi|linux-armv7-gnueabi'
+            name: 'arm_varients'
           - target: '(darwin-*|*-ppc64le)' # xgo
             name: 'osxcross'
           - target: 'linux-*-musl*' #musl

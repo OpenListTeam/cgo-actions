@@ -44272,7 +44272,7 @@ const zig_targets = [
 const zig_archMap = {
     x86_64: 'amd64',
     aarch64: 'arm64',
-    arm: 'arm',
+    arm: 'armv6',
     mips64: 'mips64',
     mips: 'mips',
     mips64el: 'mips64le',
@@ -44292,6 +44292,10 @@ function zigTargetToCGoTarget(zigt) {
 }
 function cgoTargetToZigTarget(target) {
     const [os, arch, libc] = target.split('-');
+    // arm has different handle
+    if (arch === 'armv5' || arch === 'armv6' || arch === 'armv7') {
+        return `arm-${zig_osMapRev[os] ?? os}-${libc}`;
+    }
     return `${zig_archMapRev[arch] ?? arch}-${zig_osMapRev[os] ?? os}-${libc}`;
 }
 function zig_engineGen(files) {
@@ -44327,9 +44331,10 @@ function zig_engineGen(files) {
                 CC: `/usr/local/bin/${zig_target}-zcc`
             };
             const flags = input.flags;
-            if (arch === 'arm') {
+            // if arch is armv5 6 7
+            if (arch === 'armv5' || arch === 'armv6' || arch === 'armv7') {
                 env.GOARCH = 'arm';
-                env.GOARM = '7';
+                env.GOARM = arch.split('v')[1];
             }
             if (arch === 'mips' || arch === 'mipsle') {
                 env.GOMIPS = 'softfloat';
@@ -44343,11 +44348,11 @@ function zig_engineGen(files) {
             }) `go build -o ${os == 'windows' ? TempBinName + '.exe' : TempBinName} ${calFlags(flags)} ${input.pkgs}`;
         },
         async on_target_rename(input) {
-            const [os, arch, musl] = input.target.split('-');
+            const [os, arch, libc] = input.target.split('-');
             let res = core.getInput('musl-target-format');
             res = res.replace('$os', os);
             res = res.replace('$arch', arch);
-            res = res.replace('$musl', musl);
+            res = res.replace('$libc', libc);
             return res;
         }
     });

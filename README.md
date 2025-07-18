@@ -79,7 +79,7 @@ jobs:
 | targets              | The targets to build for                        | No       | \*                                                                      |
 | out-dir              | The output directory                            | No       | bin                                                                     |
 | output               | The output binary name                          | No       | $repo-$target$ext                                                       |
-| musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl                                                         |
+| libc-target-format   | The format for targets with different libc      | No       | $os-$arch-$libc                                                         |
 | x-flags              | Extra X ldflags to pass to the go build command | No       |                                                                         |
 | musl-base-url        | Where to download musl compilers                | No       | https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
 
@@ -87,12 +87,18 @@ jobs:
 
 Use glob patterns to match the targets you want to build for.
 
+**For arm**: It will defaults to armv6 if you don't specify the version.
+
 - darwin-amd64
 - darwin-arm64
 - linux-386-gnu
 - linux-amd64-gnu
-- linux-arm-gnueabi
-- linux-arm-gnueabihf
+- linux-armv5-gnueabi
+- linux-armv5-gnueabihf
+- linux-armv6-gnueabi
+- linux-armv6-gnueabihf
+- linux-armv7-gnueabi
+- linux-armv7-gnueabihf
 - linux-arm64-gnu
 - linux-mips-gnueabi
 - linux-mipsle-gnueabi
