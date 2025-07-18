@@ -44286,9 +44286,20 @@ const zig_osMap = {
     macos: 'darwin'
 };
 const zig_osMapRev = mapRev(zig_osMap);
-function zigTargetToCGoTarget(zigt) {
-    const [arch, os, libc] = zigt.split('-');
-    return `${zig_osMap[os] ?? os}-${zig_archMap[arch] ?? arch}-${libc}`;
+function zigTargetToCGoTarget(zigts) {
+    const output = [];
+    for (let i = 0; i < zigts.length; i++) {
+        const zigt = zigts[i];
+        const [arch, os, libc] = zigt.split('-');
+        if (arch === 'arm') {
+            output.push(`${zig_osMap[os] ?? os}-armv5-${libc}`);
+            output.push(`${zig_osMap[os] ?? os}-armv6-${libc}`);
+            output.push(`${zig_osMap[os] ?? os}-armv7-${libc}`);
+            continue;
+        }
+        output.push(`${zig_osMap[os] ?? os}-${zig_archMap[arch] ?? arch}-${libc}`);
+    }
+    return output;
 }
 function cgoTargetToZigTarget(target) {
     const [os, arch, libc] = target.split('-');
@@ -44300,7 +44311,7 @@ function cgoTargetToZigTarget(target) {
 }
 function zig_engineGen(files) {
     registerEngine({
-        targets: files.map(zigTargetToCGoTarget),
+        targets: zigTargetToCGoTarget(files),
         async prepare(input) {
             console.log(input.output);
             await checkZigCompiler();

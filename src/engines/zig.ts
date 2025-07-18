@@ -41,9 +41,20 @@ const osMap = {
 } as Record<string, string>
 const osMapRev = mapRev(osMap)
 
-function zigTargetToCGoTarget(zigt: string) {
-  const [arch, os, libc] = zigt.split('-')
-  return `${osMap[os] ?? os}-${archMap[arch] ?? arch}-${libc}`
+function zigTargetToCGoTarget(zigts: string[]) {
+  const output: string[] = []
+  for (let i = 0; i < zigts.length; i++) {
+    const zigt = zigts[i]
+    const [arch, os, libc] = zigt.split('-')
+    if (arch === 'arm') {
+      output.push(`${osMap[os] ?? os}-armv5-${libc}`)
+      output.push(`${osMap[os] ?? os}-armv6-${libc}`)
+      output.push(`${osMap[os] ?? os}-armv7-${libc}`)
+      continue
+    }
+    output.push(`${osMap[os] ?? os}-${archMap[arch] ?? arch}-${libc}`)
+  }
+  return output
 }
 
 function cgoTargetToZigTarget(target: string) {
@@ -57,7 +68,7 @@ function cgoTargetToZigTarget(target: string) {
 
 function engineGen(files: string[]) {
   registerEngine({
-    targets: files.map(zigTargetToCGoTarget),
+    targets: zigTargetToCGoTarget(files),
     async prepare(input) {
       console.log(input.output)
       await checkZigCompiler()

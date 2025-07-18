@@ -87,8 +87,6 @@ jobs:
 
 Use glob patterns to match the targets you want to build for.
 
-**For arm**: It will defaults to armv6 if you don't specify the version.
-
 - darwin-amd64
 - darwin-arm64
 - linux-386-gnu
