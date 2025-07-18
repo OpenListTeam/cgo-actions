@@ -49,7 +49,7 @@ jobs:
         include:
           - target: '(linux-*|windows-*)-(gnu*|none)' # zig
             name: 'zig'
-          - target: 'darwin-*' # apple
+          - target: '(darwin-*|*-ppc64le)' # xgo
             name: 'osxcross'
           - target: 'linux-*-musl*' #musl
             name: 'musl'

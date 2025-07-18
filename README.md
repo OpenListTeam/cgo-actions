@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         targets:
-          - '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # xgo
+          - '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # zig and xgo
           - 'linux-*-musl*' #musl
           - 'windows-arm64' #win-arm64
           - 'android-*' #android
@@ -46,6 +46,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
 
       - name: Build go program
         id: cgo-action
@@ -86,21 +89,21 @@ Use glob patterns to match the targets you want to build for.
 
 - darwin-amd64
 - darwin-arm64
-- linux-386
-- linux-amd64
-- linux-arm-5
-- linux-arm-6
-- linux-arm-7
-- linux-arm64
-- linux-mips
-- linux-mipsle
-- linux-mips64
-- linux-mips64le
+- linux-386-gnu
+- linux-amd64-gnu
+- linux-arm-gnueabi
+- linux-arm-gnueabihf
+- linux-arm64-gnu
+- linux-mips-gnueabi
+- linux-mipsle-gnueabi
+- linux-mips64-gnuabi64
+- linux-mips64le-gnuabi64
 - linux-ppc64le
-- linux-riscv64
-- linux-s390x
-- windows-386
-- windows-amd64
+- linux-riscv64-gnu
+- linux-s390x-gnu
+- linux-loong64-gnu
+- windows-386-gnu
+- windows-amd64-gnu
 - linux-arm64-musl
 - linux-arm-musleabi
 - linux-arm-musleabihf
