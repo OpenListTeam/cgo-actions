@@ -44427,18 +44427,20 @@ async function setupOSXCross() {
     const osxcrossDir = '/opt/osxcross';
     if (!external_fs_default().existsSync(osxcrossDir)) {
         await $$ `mkdir -p ${osxcrossDir}`;
-        await $$ `curl -fsSL ${downloadUrl} | tar -xz -C ${osxcrossDir} --strip-components=1`;
+        await $$ `curl -fsSL -o /tmp/osxcross.tar.gz ${downloadUrl}`;
+        await $$ `tar -xzf /tmp/osxcross.tar.gz -C ${osxcrossDir}`;
+        await $$ `rm /tmp/osxcross.tar.gz`;
+        await setupMacOSSDK(`${osxcrossDir}/tarballs`);
+        // Install deps
+        await $$ `sudo apt update && sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
+        // Remove old clang if it exists
+        await $$ `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`;
+        await $$ `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`;
+        await $$ `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`;
+        await $$ `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`;
+        // Build OSXCross
+        await $$ `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
     }
-    await setupMacOSSDK(`${osxcrossDir}/tarballs`);
-    // Install deps
-    await $$ `sudo apt update && sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
-    // Remove old clang if it exists
-    await $$ `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`;
-    await $$ `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`;
-    await $$ `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`;
-    await $$ `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`;
-    // Build OSXCross
-    await $$ `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
     return `${osxcrossDir}/target`;
 }
 const appleTargetMap = {
