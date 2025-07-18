@@ -24,7 +24,7 @@ export async function setupOSXCross() {
   if (!fs.existsSync(osxcrossDir)) {
     await $$`mkdir -p ${osxcrossDir}`
     await $$`curl -fsSL -o /tmp/osxcross.tar.gz ${downloadUrl}`
-    await $$`tar -xzf /tmp/osxcross.tar.gz -C ${osxcrossDir}`
+    await $$`tar -xzf /tmp/osxcross.tar.gz -C ${osxcrossDir} --strip-components=1`
     await $$`rm /tmp/osxcross.tar.gz`
 
     await setupMacOSSDK(`${osxcrossDir}/tarballs`)
