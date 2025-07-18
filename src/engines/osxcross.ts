@@ -34,20 +34,25 @@ export async function setupOSXCross() {
     await $$`sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`
     // Remove old clang if it exists
     await execa({
-      shell: '/usr/bin/bash'
+      shell: '/usr/bin/bash',
+      stdio: 'inherit'
     })`if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`
     await execa({
-      shell: '/usr/bin/bash'
+      shell: '/usr/bin/bash',
+      stdio: 'inherit'
     })`if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`
     await execa({
-      shell: '/usr/bin/bash'
+      shell: '/usr/bin/bash',
+      stdio: 'inherit'
     })`sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`
     await execa({
-      shell: '/usr/bin/bash'
+      shell: '/usr/bin/bash',
+      stdio: 'inherit'
     })`sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`
     // Build OSXCross
     await execa({
-      shell: '/usr/bin/bash'
+      shell: '/usr/bin/bash',
+      stdio: 'inherit'
     })`UNATTENDED=1 bash ${osxcrossDir}/build.sh`
   }
   return `${osxcrossDir}/target`
