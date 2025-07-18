@@ -84,6 +84,7 @@ jobs:
           dir: './example'
           targets: ${{ matrix.target }}
           libc-target-format: $os-$libc-$arch
+          output: test-action-$target$ext
           x-flags: |
             main.owner=$owner
             main.repo=$repo
