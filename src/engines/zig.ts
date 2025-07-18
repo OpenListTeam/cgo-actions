@@ -14,7 +14,6 @@ const zig_targets = [
   'mipsel-linux-gnueabi',
   'mips64-linux-gnuabi64',
   'mips64el-linux-gnuabi64',
-  'powerpc64le-linux-gnu',
   'riscv64-linux-gnu',
   's390x-linux-gnu',
   'loongarch64-linux-gnu',
@@ -31,7 +30,6 @@ const archMap = {
   mips64el: 'mips64le',
   mipsel: 'mipsle',
   riscv64: 'riscv64',
-  powerpc64le: 'ppc64le',
   x86: '386',
   loongarch64: 'loong64'
 } as Record<string, string>
