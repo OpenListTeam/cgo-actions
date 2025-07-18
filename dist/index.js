@@ -44409,6 +44409,7 @@ registerEngine({
 
 
 
+
 async function setupMacOSSDK(basedir) {
     const OSX_SDK = 'MacOSX15.5.sdk.tar.xz';
     const OSX_SDK_URL = `https://github.com/joseluisq/macosx-sdks/releases/download/15.5/${OSX_SDK}`;
@@ -44435,12 +44436,22 @@ async function setupOSXCross() {
         await $$ `sudo apt update`;
         await $$ `sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
         // Remove old clang if it exists
-        await $$(String.raw `bash -i -c "if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi"`);
-        await $$(String.raw `bash -i -c "if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi"`);
-        await $$(String.raw `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`);
-        await $$(String.raw `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`);
+        await execa({
+            shell: '/usr/bin/bash'
+        }) `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`;
+        await execa({
+            shell: '/usr/bin/bash'
+        }) `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`;
+        await execa({
+            shell: '/usr/bin/bash'
+        }) `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`;
+        await execa({
+            shell: '/usr/bin/bash'
+        }) `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`;
         // Build OSXCross
-        await $$ `bash -i -c \"UNATTENDED=1 bash ${osxcrossDir}/build.sh\"`;
+        await execa({
+            shell: '/usr/bin/bash'
+        }) `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
     }
     return `${osxcrossDir}/target`;
 }
