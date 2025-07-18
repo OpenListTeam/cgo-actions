@@ -44435,12 +44435,12 @@ async function setupOSXCross() {
         await $$ `sudo apt update`;
         await $$ `sudo apt install -y clang-19 cmake git patch python3 libssl-dev lzma-dev libxml2-dev xz-utils bzip2 cpio bzip2 zlib1g-dev llvm-19-dev uuid-dev bash`;
         // Remove old clang if it exists
-        await $$(String.raw `if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi`);
-        await $$(String.raw `if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi`);
+        await $$(String.raw `bash -i -c "if [ -d /usr/bin/clang ]; then sudo mv /usr/bin/clang /usr/bin/clang.backup; fi"`);
+        await $$(String.raw `bash -i -c "if [ -d /usr/bin/clang++ ]; then sudo mv /usr/bin/clang++ /usr/bin/clang++.backup; fi"`);
         await $$(String.raw `sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100`);
         await $$(String.raw `sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100`);
         // Build OSXCross
-        await $$ `UNATTENDED=1 bash ${osxcrossDir}/build.sh`;
+        await $$ `bash -i -c \"UNATTENDED=1 bash ${osxcrossDir}/build.sh\"`;
     }
     return `${osxcrossDir}/target`;
 }
