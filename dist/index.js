@@ -44156,11 +44156,11 @@ function engineGen(files) {
             }) `go build -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`;
         },
         async on_target_rename(input) {
-            const [os, arch, musl] = input.target.split('-');
-            let res = core.getInput('musl-target-format');
+            const [os, arch, libc] = input.target.split('-');
+            let res = core.getInput('libc-target-format');
             res = res.replace('$os', os);
             res = res.replace('$arch', arch);
-            res = res.replace('$musl', musl);
+            res = res.replace('$libc', libc);
             return res;
         }
     });
@@ -44360,7 +44360,7 @@ function zig_engineGen(files) {
         },
         async on_target_rename(input) {
             const [os, arch, libc] = input.target.split('-');
-            let res = core.getInput('musl-target-format');
+            let res = core.getInput('libc-target-format');
             res = res.replace('$os', os);
             res = res.replace('$arch', arch);
             res = res.replace('$libc', libc);
