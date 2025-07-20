@@ -83,6 +83,22 @@ jobs:
 | x-flags              | Extra X ldflags to pass to the go build command | No       |                                                                         |
 | musl-base-url        | Where to download musl compilers                | No       | https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
 
+### About `libc-target-format` option
+
+- The `$libc` part of this option will be replaced by `gnu[eabi][hf]`,
+  `musl[eabi][hf]`, or `none` depending on the target.
+- LoongArch64 have 3 different targets, `linux-loong64-gnu` and
+  `linux-loong64-gnu-abi1.0` and `linux-loong64-musl`. Both `linux-loong64-gnu`
+  and `linux-loong64-musl` targets for `ABI2.0` (a.k.a new world) and
+  `linux-loong64-gnu-abi1.0` targets for `ABI1.0` (a.k.a old world). For
+  `ABI1.0`, the `$libc` part will be replaced by `gnu-abi1.0` to distinguish it
+  better.
+- For Windows targets (not including arm64 variant), its `$libc` part will be
+  `gnu`
+- For macOS targets, its `$libc` part will be `none`.
+- Android, FreeBSD, Windows 7 and Windows Arm64 targets will **not** have
+  `libc-target-format` available.
+
 ### Supported Targets
 
 Use glob patterns to match the targets you want to build for.
