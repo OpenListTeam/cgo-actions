@@ -11,7 +11,11 @@ name: Check Transpiled JavaScript
 
 on:
   pull_request:
+    branches:
+      - v1
   push:
+    branches:
+      - v1
 
 permissions:
   contents: read
