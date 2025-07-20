@@ -56,6 +56,6 @@ registerEngine({
         CC: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
         CXX: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
       }
-    })`${cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
+    })`${cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

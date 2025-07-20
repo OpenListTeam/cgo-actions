@@ -44529,7 +44529,7 @@ registerEngine({
                 CC: `${loongarch_abi1_0_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
                 CXX: `${loongarch_abi1_0_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
             }
-        }) `${loongarch_abi1_0_cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `${loongarch_abi1_0_cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
