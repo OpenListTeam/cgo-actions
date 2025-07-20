@@ -1,7 +1,6 @@
 # CGO Actions
 
-[![GitHub Super-Linter](https://github.com/OpenListTeam/cgo-actions/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/OpenListTeam/cgo-actions/actions/workflows/test-actions.yml/badge.svg)
+![CI](https://github.com/OpenListTeam/cgo-actions/actions/workflows/ci.yml/badge.svg)
 [![Check dist/](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml)
 [![CodeQL](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml)
 
