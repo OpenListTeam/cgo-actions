@@ -47,8 +47,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # GNU libc
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*|*loong64*)' # GNU libc
             name: 'glibc'
+          - target: '*loong64-gnu*'
+            name: 'loong64'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
           - target: 'windows-arm64' #win-arm64
