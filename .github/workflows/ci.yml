@@ -44,7 +44,7 @@ jobs:
         include:
           - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*|linux-loong64-abi1.0|linux-loong64)' # xgo
             name: 'glibc'
-          - target: 'linux-loong64-abi1.0|linux-loong64' #glibc
+          - target: '(linux-loong64-abi1.0|linux-loong64)' #glibc
             name: 'loongarch'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
