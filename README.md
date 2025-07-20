@@ -106,6 +106,7 @@ Use glob patterns to match the targets you want to build for.
 - linux-riscv64-gnu
 - linux-s390x-gnu
 - linux-loong64-gnu
+- linux-loong64-gnu-abi1.0
 - windows-386-gnu
 - windows-amd64-gnu
 - linux-arm64-musl
