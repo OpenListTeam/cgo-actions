@@ -22,34 +22,30 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
       - name: Install Dependencies
         id: npm-ci
-        run: pnpm i
+        run: npm install
 
       - name: Check Format
         id: npm-format-check
-        run: pnpm run format:check
+        run: npm run format:check
 
       - name: Lint
         id: npm-lint
-        run: pnpm run lint
+        run: npm run lint
 
       - name: Test
         id: npm-ci-test
-        run: pnpm run ci-test
+        run: npm run ci-test
 
   test-action:
     strategy:
       matrix:
         include:
-          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*)' # GNU libc
+          - target: '!(*musl*|*windows-arm64*|*android*|*freebsd*|*windows7*|linux-loong64-abi1.0|linux-loong64)' # xgo
             name: 'glibc'
+          - target: 'linux-loong64-abi1.0|linux-loong64' #glibc
+            name: 'loongarch'
           - target: 'linux-*-musl*' #musl
             name: 'musl'
           - target: 'windows-arm64' #win-arm64
