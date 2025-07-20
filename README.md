@@ -1,7 +1,6 @@
 # CGO Actions
 
-[![GitHub Super-Linter](https://github.com/OpenListTeam/cgo-actions/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/OpenListTeam/cgo-actions/actions/workflows/test-actions.yml/badge.svg)
+![CI](https://github.com/OpenListTeam/cgo-actions/actions/workflows/ci.yml/badge.svg)
 [![Check dist/](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/check-dist.yml)
 [![CodeQL](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpenListTeam/cgo-actions/actions/workflows/codeql-analysis.yml)
 
@@ -82,7 +81,11 @@ jobs:
 
 ### Supported Targets
 
-Use glob patterns to match the targets you want to build for.
+1. Use glob patterns to match the targets you want to build for.
+2. LoongArch64 have 3 different targets, `linux-loong64`, `linux-loong64-abi1.0`
+   and `linux-loong64-musl`. Both `linux-loong64` and `linux-loong64-musl`
+   targets for `ABI2.0` (a.k.a new world) and `linux-loong64-abi1.0` targets for
+   `ABI1.0` (a.k.a old world).
 
 - darwin-amd64
 - darwin-arm64
@@ -98,6 +101,8 @@ Use glob patterns to match the targets you want to build for.
 - linux-mips64le
 - linux-ppc64le
 - linux-riscv64
+- linux-loong64
+- linux-loong64-abi1.0
 - linux-s390x
 - windows-386
 - windows-amd64
