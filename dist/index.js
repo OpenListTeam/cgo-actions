@@ -44205,6 +44205,7 @@ registerEngine({
 ;// CONCATENATED MODULE: ./src/engines/xgo.ts
 
 
+
 const targetMap = {
     'darwin-amd64': 'darwin/amd64',
     'darwin-arm64': 'darwin/arm64',
@@ -44243,6 +44244,23 @@ registerEngine({
         //   outBin
         // )
         await input.$ `mv ${curBin} ${outBin}`;
+    },
+    async on_target_rename(input) {
+        const [os, arch] = input.target.split('-');
+        if (os === 'linux') {
+            let res = core.getInput('libc-target-format');
+            res = res.replace('$os', os);
+            res = res.replace('$arch', arch);
+            res = res.replace('$libc', 'gnu');
+            return res;
+        }
+        else {
+            let res = core.getInput('libc-target-format');
+            res = res.replace('$os', os);
+            res = res.replace('$arch', arch);
+            res = res.replace('$libc', 'none');
+            return res;
+        }
     }
 });
 
@@ -44480,6 +44498,7 @@ registerEngine({
 
 
 
+
 async function loongarch_abi1_0_getGoVersion() {
     const goVersion = await $ `go version`;
     // go version go1.24.1 darwin/arm64
@@ -44530,6 +44549,14 @@ registerEngine({
                 CXX: `${loongarch_abi1_0_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
             }
         }) `${loongarch_abi1_0_cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+    },
+    async on_target_rename(input) {
+        const [os, arch, libc] = input.target.split('-');
+        let res = core.getInput('libc-target-format');
+        res = res.replace('$os', os);
+        res = res.replace('$arch', arch);
+        res = res.replace('$libc', libc);
+        return res;
     }
 });
 

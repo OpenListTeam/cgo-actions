@@ -1,4 +1,5 @@
 import { registerEngine } from '../runner'
+import * as core from '@actions/core'
 import { $$, calFlags, TempBinName } from '../utils'
 
 const targetMap = {
@@ -40,5 +41,21 @@ registerEngine({
     //   outBin
     // )
     await input.$`mv ${curBin} ${outBin}`
+  },
+  async on_target_rename(input) {
+    const [os, arch] = input.target.split('-')
+    if (os === 'linux') {
+      let res = core.getInput('libc-target-format')
+      res = res.replace('$os', os)
+      res = res.replace('$arch', arch)
+      res = res.replace('$libc', 'gnu')
+      return res
+    } else {
+      let res = core.getInput('libc-target-format')
+      res = res.replace('$os', os)
+      res = res.replace('$arch', arch)
+      res = res.replace('$libc', 'none')
+      return res
+    }
   }
 })
