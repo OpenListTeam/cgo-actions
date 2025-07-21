@@ -43967,7 +43967,7 @@ const arches = {
 registerEngine({
     targets: Object.keys(arches).map(arch => `android-${arch}`),
     async prepare(input) {
-        await $$ `wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`;
+        await $$ `curl -fsSL --max-time 2 -o android-ndk-r26b-linux.zip https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`;
         await $$ `unzip android-ndk-r26b-linux.zip`;
         external_fs_default().rmSync('android-ndk-r26b-linux.zip');
     },
@@ -44102,7 +44102,7 @@ function engineGen(files) {
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
-            await $$ `curl -L -o ${filename} ${url}`;
+            await $$ `curl -fsSL --max-time 2 -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
             const [os, arch] = input.target.split('-');
@@ -44260,7 +44260,7 @@ registerEngine({
         const os_arch = freebsd_arches[arch].os_arch;
         const target = freebsd_arches[arch].target;
         const sysroot_dir = `${process.cwd()}/${os_arch}`;
-        await $$ `wget -q https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`;
+        await $$ `curl -fsSL --max-time 2 -o base.txz https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`;
         external_fs_default().mkdirSync(sysroot_dir, { recursive: true });
         await $$ `sudo tar -xf ./base.txz -C ${sysroot_dir}`;
         external_fs_default().rmSync('base.txz');
@@ -44306,7 +44306,7 @@ async function getGoVersion() {
 }
 async function setupWin7Go() {
     const goVersion = await getGoVersion();
-    await $$ `curl -L https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
+    await $$ `curl -fsSL --max-time 2 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
     return `${cwd}/go-win7/bin/go`;
@@ -44358,7 +44358,7 @@ async function setupABI1_0Go() {
     // Get major and minor version
     const majorMinorVersion = goVersion.split('.')[0] + '.' + goVersion.split('.')[1];
     // https://ftp.loongnix.cn/toolchain/golang/go-1.24/abi1.0/go1.24.3.linux-amd64.tar.gz
-    await $$ `curl -A ${String.raw `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL  https://ftp.loongnix.cn/toolchain/golang/go-${majorMinorVersion}/abi1.0/go${goVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`;
+    await $$ `curl -A ${String.raw `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL --max-time 2 https://ftp.loongnix.cn/toolchain/golang/go-${majorMinorVersion}/abi1.0/go${goVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`;
     await $$ `rm -rf go-loong64-abi1.0`;
     await $$ `mkdir go-loong64-abi1.0`;
     await $$ `tar -xzf go-loong64-abi1.0.tar.gz -C go-loong64-abi1.0 --strip-components=1`;
@@ -44366,7 +44366,7 @@ async function setupABI1_0Go() {
     return `${loongarch64_cwd}/go-loong64-abi1.0/bin/go`;
 }
 async function setupABI1_0GCC() {
-    await $$ `curl -A ${String.raw `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL  https://ftp.loongnix.cn/toolchain/gcc/release/loongarch/gcc8/loongson-gnu-toolchain-8.3-x86_64-loongarch64-linux-gnu-rc1.6.tar.xz -o gcc8-loong64-abi1.0.tar.xz`;
+    await $$ `curl -A ${String.raw `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL --max-time 2 https://ftp.loongnix.cn/toolchain/gcc/release/loongarch/gcc8/loongson-gnu-toolchain-8.3-x86_64-loongarch64-linux-gnu-rc1.6.tar.xz -o gcc8-loong64-abi1.0.tar.xz`;
     await $$ `rm -rf gcc8-loong64-abi1.0`;
     await $$ `mkdir gcc8-loong64-abi1.0`;
     await $$ `tar -Jxf gcc8-loong64-abi1.0.tar.xz -C gcc8-loong64-abi1.0 --strip-components=1`;
@@ -44374,7 +44374,7 @@ async function setupABI1_0GCC() {
     return `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-`;
 }
 async function setupABI2_0GCC() {
-    await $$ `curl -fsSL https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
+    await $$ `curl -fsSL --max-time 2 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;
     await $$ `tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`;

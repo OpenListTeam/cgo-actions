@@ -25,7 +25,7 @@ registerEngine({
     const os_arch = arches[arch].os_arch
     const target = arches[arch].target
     const sysroot_dir = `${process.cwd()}/${os_arch}`
-    await $$`wget -q https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`
+    await $$`curl -fsSL --max-time 2 -o base.txz https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`
     fs.mkdirSync(sysroot_dir, { recursive: true })
     await $$`sudo tar -xf ./base.txz -C ${sysroot_dir}`
     fs.rmSync('base.txz')
