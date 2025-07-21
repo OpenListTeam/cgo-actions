@@ -2,6 +2,8 @@ import { $$, calFlags, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import { $ } from 'execa'
 
+const cwd = process.cwd()
+
 async function getGoVersion() {
   const goVersion = await $`go version`
   // go version go1.24.1 darwin/arm64
@@ -44,12 +46,9 @@ async function setupABI2_0GCC() {
   return `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-`
 }
 
-const cwd = process.cwd()
-
 registerEngine({
   targets: ['linux-loong64', 'linux-loong64-abi1.0'],
   async prepare(input) {
-    console.log(input.output)
     await setupABI1_0GCC()
     await setupABI2_0GCC()
     await setupABI1_0Go()

@@ -43967,7 +43967,6 @@ const arches = {
 registerEngine({
     targets: Object.keys(arches).map(arch => `android-${arch}`),
     async prepare(input) {
-        console.log(input.output);
         await $$ `wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`;
         await $$ `unzip android-ndk-r26b-linux.zip`;
         external_fs_default().rmSync('android-ndk-r26b-linux.zip');
@@ -44171,7 +44170,6 @@ zig c++ -target aarch64-windows-gnu $@
 registerEngine({
     targets: ['windows-arm64'],
     async prepare(input) {
-        console.log(input.output);
         await $$ `sudo snap install zig --classic --beta`;
         if (!external_fs_default().existsSync('/usr/local/bin')) {
             external_fs_default().mkdirSync('/usr/local/bin', { recursive: true });
@@ -44218,7 +44216,6 @@ const targetMap = {
 registerEngine({
     targets: Object.keys(targetMap),
     async prepare(input) {
-        console.log(input.output);
         // docker pull crazymax/xgo:latest
         await $$ `docker pull crazymax/xgo:latest`;
         // go install github.com/crazy-max/xgo@latest
@@ -44322,7 +44319,6 @@ const cwd = process.cwd();
 registerEngine({
     targets: ['windows7-386', 'windows7-amd64'],
     async prepare(input) {
-        console.log(input.output);
         await $$ `sudo snap install zig --classic --beta`;
         await setupWin7Go();
     },
@@ -44347,6 +44343,7 @@ registerEngine({
 
 
 
+const loongarch64_cwd = process.cwd();
 async function loongarch64_getGoVersion() {
     const goVersion = await $ `go version`;
     // go version go1.24.1 darwin/arm64
@@ -44384,11 +44381,9 @@ async function setupABI2_0GCC() {
     await $$ `rm gcc12-loong64-abi2.0.tar.xz`;
     return `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-`;
 }
-const loongarch64_cwd = process.cwd();
 registerEngine({
     targets: ['linux-loong64', 'linux-loong64-abi1.0'],
     async prepare(input) {
-        console.log(input.output);
         await setupABI1_0GCC();
         await setupABI2_0GCC();
         await setupABI1_0Go();

@@ -47,7 +47,6 @@ const cwd = process.cwd()
 registerEngine({
   targets: ['windows7-386', 'windows7-amd64'],
   async prepare(input) {
-    console.log(input.output)
     await $$`sudo snap install zig --classic --beta`
     await setupWin7Go()
   },
