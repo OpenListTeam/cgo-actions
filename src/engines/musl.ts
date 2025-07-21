@@ -123,7 +123,7 @@ function engineGen(files: string[]) {
       const file = targetToFile(input.target)
       const filename = file + '.tgz'
       const url = `${base}/${filename}`
-      await $$`curl -L -o ${filename} ${url}`
+      await $$`curl -fsSL --retry 3 -o ${filename} ${url}`
       await $$`sudo tar xf ${filename} --strip-components 1 -C /usr/local`
       fs.rmSync(filename)
       const [os, arch] = input.target.split('-')
