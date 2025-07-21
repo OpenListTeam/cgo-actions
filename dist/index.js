@@ -44108,9 +44108,9 @@ function engineGen(files) {
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
             const github_auth = input.github_token != undefined
-                ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+                ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
                 : '';
-            await $$ `curl -fsSL --retry 3 ${github_auth} -o ${filename} ${url}`;
+            await $$ `curl -fsSL ${github_auth} --retry 3 -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
             const [os, arch] = input.target.split('-');
@@ -44315,9 +44315,9 @@ async function getGoVersion() {
 async function setupWin7Go(input) {
     const goVersion = await getGoVersion();
     const github_auth = input.github_token != undefined
-        ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+        ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
         : '';
-    await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
+    await $$ `curl -fsSL ${github_auth} --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
     return `${cwd}/go-win7/bin/go`;
@@ -44386,9 +44386,9 @@ async function setupABI1_0GCC() {
 }
 async function setupABI2_0GCC(input) {
     const github_auth = input.github_token != undefined
-        ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+        ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
         : '';
-    await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
+    await $$ `curl -fsSL ${github_auth} --retry 3 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;
     await $$ `tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`;

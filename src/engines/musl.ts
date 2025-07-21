@@ -125,9 +125,9 @@ function engineGen(files: string[]) {
       const url = `${base}/${filename}`
       const github_auth =
         input.github_token != undefined
-          ? String.raw`--header "Authorization: Bearer ${input.github_token}"`
+          ? String.raw`-H "Authorization: Bearer ${input.github_token}"`
           : ''
-      await $$`curl -fsSL --retry 3 ${github_auth} -o ${filename} ${url}`
+      await $$`curl -fsSL ${github_auth} --retry 3 -o ${filename} ${url}`
       await $$`sudo tar xf ${filename} --strip-components 1 -C /usr/local`
       fs.rmSync(filename)
       const [os, arch] = input.target.split('-')
