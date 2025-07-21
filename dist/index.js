@@ -43820,17 +43820,20 @@ class Runner {
         if (musl_base_url.endsWith('/')) {
             musl_base_url = musl_base_url.slice(0, -1);
         }
+        const github_token = core.getInput('github-token');
         this.input = {
             dir,
             pkgs,
             output,
             out_dir,
             musl_base_url,
+            github_token,
             $: $$({
                 cwd: dir
             })
         };
-        core.info(`Input: ${JSON.stringify(this.input)}...`);
+        // Never print github_token in production !
+        // core.info(`Input: ${JSON.stringify(this.input)}...`)
         const targets = core.getInput('targets')
             .split(',')
             .map(t => t.trim());
@@ -43858,7 +43861,7 @@ class Runner {
                 target
             };
             const flags = await this.getFlags(tmpInput);
-            core.info(`Flags json: ${JSON.stringify(flags, null, 2)}...`);
+            core.debug(`Flags json: ${JSON.stringify(flags, null, 2)}...`);
             core.info(`Flags: ${calFlags(flags)}...`);
             const input = {
                 ...tmpInput,
@@ -44102,7 +44105,8 @@ function engineGen(files) {
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
-            await $$ `curl -fsSL --retry 3 -o ${filename} ${url}`;
+            const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+            await $$ `curl -fsSL --retry 3 ${github_auth} -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
             const [os, arch] = input.target.split('-');
@@ -44304,9 +44308,10 @@ async function getGoVersion() {
     }
     return match[1];
 }
-async function setupWin7Go() {
+async function setupWin7Go(input) {
     const goVersion = await getGoVersion();
-    await $$ `curl -fsSL --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
+    const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+    await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
     return `${cwd}/go-win7/bin/go`;
@@ -44320,7 +44325,7 @@ registerEngine({
     targets: ['windows7-386', 'windows7-amd64'],
     async prepare(input) {
         await $$ `sudo snap install zig --classic --beta`;
-        await setupWin7Go();
+        await setupWin7Go(input);
     },
     async run(input) {
         const target = input.target;
@@ -44373,8 +44378,9 @@ async function setupABI1_0GCC() {
     await $$ `rm gcc8-loong64-abi1.0.tar.xz`;
     return `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-`;
 }
-async function setupABI2_0GCC() {
-    await $$ `curl -fsSL --retry 3 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
+async function setupABI2_0GCC(input) {
+    const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+    await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;
     await $$ `tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`;
@@ -44385,7 +44391,7 @@ registerEngine({
     targets: ['linux-loong64', 'linux-loong64-abi1.0'],
     async prepare(input) {
         await setupABI1_0GCC();
-        await setupABI2_0GCC();
+        await setupABI2_0GCC(input);
         await setupABI1_0Go();
     },
     async run(input) {
