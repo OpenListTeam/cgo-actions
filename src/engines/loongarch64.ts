@@ -41,7 +41,7 @@ async function setupABI1_0GCC() {
 async function setupABI2_0GCC(input: Input) {
   const github_auth =
     input.github_token != undefined
-      ? String.raw`-H "Authorization: Bearer ${input.github_token}"`
+      ? String.raw`"-H 'Authorization: Bearer ${input.github_token}'"`
       : ''
   await $$`curl -fsSL ${github_auth} --retry 3 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`
   await $$`rm -rf gcc12-loong64-abi2.0`

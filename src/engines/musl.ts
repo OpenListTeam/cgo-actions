@@ -125,7 +125,7 @@ function engineGen(files: string[]) {
       const url = `${base}/${filename}`
       const github_auth =
         input.github_token != undefined
-          ? String.raw`-H "Authorization: Bearer ${input.github_token}"`
+          ? String.raw`"-H 'Authorization: Bearer ${input.github_token}'"`
           : ''
       await $$`curl -fsSL ${github_auth} --retry 3 -o ${filename} ${url}`
       await $$`sudo tar xf ${filename} --strip-components 1 -C /usr/local`

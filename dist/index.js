@@ -44108,7 +44108,7 @@ function engineGen(files) {
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
             const github_auth = input.github_token != undefined
-                ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
+                ? String.raw `"-H 'Authorization: Bearer ${input.github_token}'"`
                 : '';
             await $$ `curl -fsSL ${github_auth} --retry 3 -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
@@ -44315,7 +44315,7 @@ async function getGoVersion() {
 async function setupWin7Go(input) {
     const goVersion = await getGoVersion();
     const github_auth = input.github_token != undefined
-        ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
+        ? String.raw `"-H 'Authorization: Bearer ${input.github_token}'"`
         : '';
     await $$ `curl -fsSL ${github_auth} --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
@@ -44386,7 +44386,7 @@ async function setupABI1_0GCC() {
 }
 async function setupABI2_0GCC(input) {
     const github_auth = input.github_token != undefined
-        ? String.raw `-H "Authorization: Bearer ${input.github_token}"`
+        ? String.raw `"-H 'Authorization: Bearer ${input.github_token}'"`
         : '';
     await $$ `curl -fsSL ${github_auth} --retry 3 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;

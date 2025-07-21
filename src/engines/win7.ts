@@ -34,7 +34,7 @@ async function setupWin7Go(input: Input) {
   const goVersion = await getGoVersion()
   const github_auth =
     input.github_token != undefined
-      ? String.raw`-H "Authorization: Bearer ${input.github_token}"`
+      ? String.raw`"-H 'Authorization: Bearer ${input.github_token}'"`
       : ''
   await $$`curl -fsSL ${github_auth} --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`
   await $$`unzip go-win7.zip -d ${cwd}/go-win7`
