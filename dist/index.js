@@ -43820,7 +43820,9 @@ class Runner {
         if (musl_base_url.endsWith('/')) {
             musl_base_url = musl_base_url.slice(0, -1);
         }
-        const github_token = core.getInput('github-token');
+        const github_token = core.getInput('github-token').length === 0
+            ? undefined
+            : core.getInput('github-token');
         this.input = {
             dir,
             pkgs,
@@ -44105,7 +44107,9 @@ function engineGen(files) {
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
-            const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+            const github_auth = input.github_token != undefined
+                ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+                : '';
             await $$ `curl -fsSL --retry 3 ${github_auth} -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
@@ -44310,7 +44314,9 @@ async function getGoVersion() {
 }
 async function setupWin7Go(input) {
     const goVersion = await getGoVersion();
-    const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+    const github_auth = input.github_token != undefined
+        ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+        : '';
     await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
@@ -44379,7 +44385,9 @@ async function setupABI1_0GCC() {
     return `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-`;
 }
 async function setupABI2_0GCC(input) {
-    const github_auth = String.raw `--header "Authorization: Bearer ${input.github_token}"`;
+    const github_auth = input.github_token != undefined
+        ? String.raw `--header "Authorization: Bearer ${input.github_token}"`
+        : '';
     await $$ `curl -fsSL --retry 3 ${github_auth} https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;

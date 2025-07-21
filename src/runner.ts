@@ -50,7 +50,10 @@ export class Runner {
     if (musl_base_url.endsWith('/')) {
       musl_base_url = musl_base_url.slice(0, -1)
     }
-    const github_token = core.getInput('github-token')
+    const github_token =
+      core.getInput('github-token').length === 0
+        ? undefined
+        : core.getInput('github-token')
     this.input = {
       dir,
       pkgs,

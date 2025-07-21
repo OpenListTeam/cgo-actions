@@ -60,9 +60,10 @@ inputs:
     default: ''
   github-token:
     description:
-      'The github token, used to avoid rate limit when downloading from github'
+      'The github token, used to avoid rate limit when downloading from github,
+      will not use if not passed'
     required: false
-    default: '${{ secrets.GITHUB_TOKEN }}' # This will be replaced by the default value in the runner
+    default: ''
 
 # Define your outputs here.
 outputs:

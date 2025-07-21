@@ -80,6 +80,7 @@ jobs:
           dir: './example'
           targets: ${{ matrix.target }}
           musl-target-format: $os-$musl-$arch
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           x-flags: |
             main.owner=$owner
             main.repo=$repo
