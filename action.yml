@@ -62,7 +62,7 @@ inputs:
     description:
       'The github token, used to avoid rate limit when downloading from github'
     required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    default: '${{ secrets.GITHUB_TOKEN }}' # This will be replaced by the default value in the runner
 
 # Define your outputs here.
 outputs:
