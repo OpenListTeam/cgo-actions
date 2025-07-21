@@ -39,7 +39,7 @@ async function setupABI1_0GCC() {
 }
 
 async function setupABI2_0GCC(input: Input) {
-  await $$`curl -fsSL --retry 3 -o gcc12-loong64-abi2.0.tar.xz https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -H 'Authorization: Bearer ${input.github_token}'`
+  await $$`curl -fsSL --retry 3 -o gcc12-loong64-abi2.0.tar.xz -H 'Authorization: Bearer ${input.github_token}' https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz`
   await $$`rm -rf gcc12-loong64-abi2.0`
   await $$`mkdir gcc12-loong64-abi2.0`
   await $$`tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`
