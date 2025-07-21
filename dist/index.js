@@ -43967,7 +43967,7 @@ const arches = {
 registerEngine({
     targets: Object.keys(arches).map(arch => `android-${arch}`),
     async prepare(input) {
-        await $$ `curl -fsSL --max-time 2 -o android-ndk-r26b-linux.zip https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`;
+        await $$ `curl -fsSL --retry 3 -o android-ndk-r26b-linux.zip https://dl.google.com/android/repository/android-ndk-r26b-linux.zip`;
         await $$ `unzip android-ndk-r26b-linux.zip`;
         external_fs_default().rmSync('android-ndk-r26b-linux.zip');
     },
@@ -44102,7 +44102,7 @@ function engineGen(files) {
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
-            await $$ `curl -fsSL --max-time 2 -o ${filename} ${url}`;
+            await $$ `curl -fsSL --retry 3 -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
             const [os, arch] = input.target.split('-');
@@ -44260,7 +44260,7 @@ registerEngine({
         const os_arch = freebsd_arches[arch].os_arch;
         const target = freebsd_arches[arch].target;
         const sysroot_dir = `${process.cwd()}/${os_arch}`;
-        await $$ `curl -fsSL --max-time 2 -o base.txz https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`;
+        await $$ `curl -fsSL --retry 3 -o base.txz https://download.freebsd.org/releases/${os_arch}/14.3-RELEASE/base.txz`;
         external_fs_default().mkdirSync(sysroot_dir, { recursive: true });
         await $$ `sudo tar -xf ./base.txz -C ${sysroot_dir}`;
         external_fs_default().rmSync('base.txz');
@@ -44306,7 +44306,7 @@ async function getGoVersion() {
 }
 async function setupWin7Go() {
     const goVersion = await getGoVersion();
-    await $$ `curl -fsSL --max-time 2 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
+    await $$ `curl -fsSL --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
     return `${cwd}/go-win7/bin/go`;
@@ -44374,7 +44374,7 @@ async function setupABI1_0GCC() {
     return `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-`;
 }
 async function setupABI2_0GCC() {
-    await $$ `curl -fsSL --max-time 2 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
+    await $$ `curl -fsSL --retry 3 https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz -o gcc12-loong64-abi2.0.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;
     await $$ `tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`;
