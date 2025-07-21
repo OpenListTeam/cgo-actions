@@ -44107,7 +44107,7 @@ function engineGen(files) {
             const file = targetToFile(input.target);
             const filename = file + '.tgz';
             const url = `${base}/${filename}`;
-            await $$ `curl -fsSL --retry 3 -H "Authorization: Bearer ${input.github_token}" -o ${filename} ${url}`;
+            await $$ `curl -fsSL --retry 3 -H ${String.raw `"Authorization: Bearer ${input.github_token}"`} -o ${filename} ${url}`;
             await $$ `sudo tar xf ${filename} --strip-components 1 -C /usr/local`;
             external_fs_default().rmSync(filename);
             const [os, arch] = input.target.split('-');
@@ -44311,7 +44311,7 @@ async function getGoVersion() {
 }
 async function setupWin7Go(input) {
     const goVersion = await getGoVersion();
-    await $$ `curl -fsSL --retry 3 -o go-win7.zip -H "Authorization: Bearer ${input.github_token}" https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip`;
+    await $$ `curl -fsSL --retry 3 -o go-win7.zip -H ${String.raw `"Authorization: Bearer ${input.github_token}"`} https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip`;
     await $$ `unzip go-win7.zip -d ${cwd}/go-win7`;
     await $$ `rm go-win7.zip`;
     return `${cwd}/go-win7/bin/go`;
@@ -44379,7 +44379,7 @@ async function setupABI1_0GCC() {
     return `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-`;
 }
 async function setupABI2_0GCC(input) {
-    await $$ `curl -fsSL --retry 3 -o gcc12-loong64-abi2.0.tar.xz -H "Authorization: Bearer ${input.github_token}" https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz`;
+    await $$ `curl -fsSL --retry 3 -o gcc12-loong64-abi2.0.tar.xz -H ${String.raw `"Authorization: Bearer ${input.github_token}"`} https://github.com/loong64/cross-tools/releases/download/20250507/x86_64-cross-tools-loongarch64-unknown-linux-gnu-legacy.tar.xz`;
     await $$ `rm -rf gcc12-loong64-abi2.0`;
     await $$ `mkdir gcc12-loong64-abi2.0`;
     await $$ `tar -Jxf gcc12-loong64-abi2.0.tar.xz -C gcc12-loong64-abi2.0 --strip-components=1`;
