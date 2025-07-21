@@ -123,11 +123,7 @@ function engineGen(files: string[]) {
       const file = targetToFile(input.target)
       const filename = file + '.tgz'
       const url = `${base}/${filename}`
-      const github_auth =
-        input.github_token != undefined
-          ? String.raw`"-H 'Authorization: Bearer ${input.github_token}'"`
-          : ''
-      await $$`curl -fsSL ${github_auth} --retry 3 -o ${filename} ${url}`
+      await $$`curl -fsSL ${String.raw`-H "Authorization: Bearer ${input.github_token}"`} --retry 3 -o ${filename} ${url}`
       await $$`sudo tar xf ${filename} --strip-components 1 -C /usr/local`
       fs.rmSync(filename)
       const [os, arch] = input.target.split('-')

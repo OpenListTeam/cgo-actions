@@ -78,7 +78,7 @@ jobs:
 | musl-target-format   | The format of the musl target                   | No       | $os-$arch-$musl                                                         |
 | x-flags              | Extra X ldflags to pass to the go build command | No       |                                                                         |
 | musl-base-url        | Where to download musl compilers                | No       | https://github.com/OpenListTeam/musl-compilers/releases/latest/download |
-| github-token         | Avoid rate limit when downloading from GitHub   | No       | No default value, will no use this value if it is not provided          |
+| github-token         | Avoid rate limit when downloading from GitHub   | No       | process.env.GITHUB_TOKEN                                                |
 
 ### Supported Targets
 

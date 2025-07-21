@@ -52,7 +52,7 @@ export class Runner {
     }
     const github_token =
       core.getInput('github-token').length === 0
-        ? undefined
+        ? (process.env.GITHUB_TOKEN ?? '')
         : core.getInput('github-token')
     this.input = {
       dir,
