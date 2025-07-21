@@ -19,6 +19,7 @@ export type CommonInput = {
   out_dir: string
   output: string
   musl_base_url: string
+  github_token: string
   $: typeof $$
 }
 

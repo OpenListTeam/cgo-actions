@@ -2,6 +2,7 @@ import { $$, calFlags, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 import { $ } from 'execa'
+import { Input } from '../types'
 
 async function setupZcx(target: string) {
   const zcc = `#!/bin/sh
@@ -29,9 +30,9 @@ async function getGoVersion() {
   return match[1]
 }
 
-async function setupWin7Go() {
+async function setupWin7Go(input: Input) {
   const goVersion = await getGoVersion()
-  await $$`curl -fsSL --retry 3 https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip -o go-win7.zip`
+  await $$`curl -fsSL --retry 3 -o go-win7.zip -H ${String.raw`Authorization: Bearer ${input.github_token}`} https://github.com/XTLS/go-win7/releases/download/patched-${goVersion}/go-for-win7-linux-amd64.zip`
   await $$`unzip go-win7.zip -d ${cwd}/go-win7`
   await $$`rm go-win7.zip`
   return `${cwd}/go-win7/bin/go`
@@ -48,7 +49,7 @@ registerEngine({
   targets: ['windows7-386', 'windows7-amd64'],
   async prepare(input) {
     await $$`sudo snap install zig --classic --beta`
-    await setupWin7Go()
+    await setupWin7Go(input)
   },
   async run(input) {
     const target = input.target
