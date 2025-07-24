@@ -69,6 +69,15 @@ registerEngine({
           CXX: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
         }
       })`${cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+      await input.$({
+        env: {
+          CGO_ENABLED: '1',
+          GOOS: os,
+          GOARCH: arch,
+          CC: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
+          CXX: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
+        }
+      })`${cwd}/go-loong64-abi1.0/bin/go clean`
     } else {
       await input.$({
         env: {
@@ -79,6 +88,15 @@ registerEngine({
           CXX: `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
         }
       })`go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+      await input.$({
+        env: {
+          CGO_ENABLED: '1',
+          GOOS: os,
+          GOARCH: arch,
+          CC: `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-gcc`,
+          CXX: `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
+        }
+      })`go clean`
     }
   }
 })
