@@ -15,13 +15,12 @@ async function getGoVersion() {
   return match[1]
 }
 
-async function setupABI1_0Go() {
+async function setupABI1_0Go(input: Input) {
   const goVersion = await getGoVersion()
   // Get major and minor version
   const majorMinorVersion =
     goVersion.split('.')[0] + '.' + goVersion.split('.')[1]
-  // https://ftp.loongnix.cn/toolchain/golang/go-1.24/abi1.0/go1.24.3.linux-amd64.tar.gz
-  await $$`curl -A ${String.raw`"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL --retry 3 https://ftp.loongnix.cn/toolchain/golang/go-${majorMinorVersion}/abi1.0/go${goVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`
+  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250722/go${goVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`
   await $$`rm -rf go-loong64-abi1.0`
   await $$`mkdir go-loong64-abi1.0`
   await $$`tar -xzf go-loong64-abi1.0.tar.gz -C go-loong64-abi1.0 --strip-components=1`
@@ -52,7 +51,7 @@ registerEngine({
   async prepare(input) {
     await setupABI1_0GCC(input)
     await setupABI2_0GCC(input)
-    await setupABI1_0Go()
+    await setupABI1_0Go(input)
   },
   async run(input) {
     const target = input.target
