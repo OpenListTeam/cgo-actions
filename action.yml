@@ -58,6 +58,12 @@ inputs:
     description: 'Extra X ldflags to pass to the go build command'
     required: false
     default: ''
+  github-token:
+    description:
+      'The github token, used to avoid rate limit when downloading from github,
+      will not use if not passed'
+    required: false
+    default: ''
 
 # Define your outputs here.
 outputs:

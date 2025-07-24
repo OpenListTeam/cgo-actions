@@ -50,17 +50,23 @@ export class Runner {
     if (musl_base_url.endsWith('/')) {
       musl_base_url = musl_base_url.slice(0, -1)
     }
+    const github_token =
+      core.getInput('github-token').length === 0
+        ? (process.env.GITHUB_TOKEN ?? '')
+        : core.getInput('github-token')
     this.input = {
       dir,
       pkgs,
       output,
       out_dir,
       musl_base_url,
+      github_token,
       $: $$({
         cwd: dir
       })
     }
-    core.info(`Input: ${JSON.stringify(this.input)}...`)
+    // Never print github_token in production !
+    // core.info(`Input: ${JSON.stringify(this.input)}...`)
 
     const targets = core
       .getInput('targets')
@@ -91,7 +97,7 @@ export class Runner {
         target
       }
       const flags = await this.getFlags(tmpInput)
-      core.info(`Flags json: ${JSON.stringify(flags, null, 2)}...`)
+      core.debug(`Flags json: ${JSON.stringify(flags, null, 2)}...`)
       core.info(`Flags: ${calFlags(flags)}...`)
       const input = {
         ...tmpInput,
