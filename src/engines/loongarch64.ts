@@ -29,8 +29,8 @@ async function setupABI1_0Go() {
   return `${cwd}/go-loong64-abi1.0/bin/go`
 }
 
-async function setupABI1_0GCC() {
-  await $$`curl -A ${String.raw`"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"`} -fsSL --retry 3 https://ftp.loongnix.cn/toolchain/gcc/release/loongarch/gcc8/loongson-gnu-toolchain-8.3-x86_64-loongarch64-linux-gnu-rc1.6.tar.xz -o gcc8-loong64-abi1.0.tar.xz`
+async function setupABI1_0GCC(input: Input) {
+  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250722/loongson-gnu-toolchain-8.3.novec-x86_64-loongarch64-linux-gnu-rc1.1.tar.xz -o gcc8-loong64-abi1.0.tar.xz`
   await $$`rm -rf gcc8-loong64-abi1.0`
   await $$`mkdir gcc8-loong64-abi1.0`
   await $$`tar -Jxf gcc8-loong64-abi1.0.tar.xz -C gcc8-loong64-abi1.0 --strip-components=1`
@@ -50,7 +50,7 @@ async function setupABI2_0GCC(input: Input) {
 registerEngine({
   targets: ['linux-loong64', 'linux-loong64-abi1.0'],
   async prepare(input) {
-    await setupABI1_0GCC()
+    await setupABI1_0GCC(input)
     await setupABI2_0GCC(input)
     await setupABI1_0Go()
   },
