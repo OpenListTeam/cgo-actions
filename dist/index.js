@@ -44413,16 +44413,7 @@ registerEngine({
                     CC: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
                     CXX: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
                 }
-            }) `${loongarch64_cwd}/go-loong64-abi1.0/bin/go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
-            await input.$({
-                env: {
-                    CGO_ENABLED: '1',
-                    GOOS: os,
-                    GOARCH: arch,
-                    CC: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
-                    CXX: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
-                }
-            }) `${loongarch64_cwd}/go-loong64-abi1.0/bin/go clean`;
+            }) `${loongarch64_cwd}/go-loong64-abi1.0/bin/go build -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
         }
         else {
             await input.$({
@@ -44433,16 +44424,7 @@ registerEngine({
                     CC: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-gcc`,
                     CXX: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
                 }
-            }) `go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
-            await input.$({
-                env: {
-                    CGO_ENABLED: '1',
-                    GOOS: os,
-                    GOARCH: arch,
-                    CC: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-gcc`,
-                    CXX: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
-                }
-            }) `go clean`;
+            }) `go build -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
         }
     }
 });
