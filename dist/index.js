@@ -44370,7 +44370,7 @@ async function setupABI1_0Go(input) {
     return `${loongarch64_cwd}/go-loong64-abi1.0/bin/go`;
 }
 async function setupABI1_0GCC(input) {
-    await $$ `curl -H ${String.raw `Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250722/loongson-gnu-toolchain-8.3.novec-x86_64-loongarch64-linux-gnu-rc1.1.tar.xz -o gcc8-loong64-abi1.0.tar.xz`;
+    await $$ `curl -H ${String.raw `Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250722/loongson-gnu-toolchain-8.3-x86_64-loongarch64-linux-gnu-rc1.6.tar.xz -o gcc8-loong64-abi1.0.tar.xz`;
     await $$ `rm -rf gcc8-loong64-abi1.0`;
     await $$ `mkdir gcc8-loong64-abi1.0`;
     await $$ `tar -Jxf gcc8-loong64-abi1.0.tar.xz -C gcc8-loong64-abi1.0 --strip-components=1`;
