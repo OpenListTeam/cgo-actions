@@ -5,11 +5,11 @@ import { Input } from '../types'
 
 const cwd = process.cwd()
 
-const oldWorldGoVersion = '1.24.3'
+const oldWorldGoVersion = '1.25.0'
 
 async function setupABI1_0Go(input: Input) {
   // Get major and minor version
-  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250722/go${oldWorldGoVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`
+  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250821/go${oldWorldGoVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`
   await $$`rm -rf go-loong64-abi1.0`
   await $$`mkdir go-loong64-abi1.0`
   await $$`tar -xzf go-loong64-abi1.0.tar.gz -C go-loong64-abi1.0 --strip-components=1`
