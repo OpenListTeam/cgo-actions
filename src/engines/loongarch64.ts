@@ -15,12 +15,19 @@ const oldWorldGoVersionDict = {
 
 const cwd = process.cwd()
 
+async function getGoVersion() {
+  const goVersion = await $`go version`
+  // go version go1.24.1 darwin/arm64
+  const match = goVersion.stdout.match(/go(\d+\.\d+\.\d+)/)
+  if (!match) {
+    throw new Error('Failed to get go version')
+  }
+  return match[1]
+}
+
 async function setupABI1_0Go(input: Input) {
   // Get system go version
-  const currentGoVersion = (await $`go version`).stdout.replace(
-    'go version ',
-    ''
-  )
+  const currentGoVersion = await getGoVersion()
   core.info(`Local go version is ${currentGoVersion}`)
   let oldWorldGoVersion = currentGoVersion
   let oldWorldGoUrl = ''

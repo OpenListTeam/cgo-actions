@@ -44593,9 +44593,18 @@ const oldWorldGoVersionDict = {
     '1.24.0': '20250722/go1.24.0.linux-amd64.tar.gz'
 };
 const loongarch64_cwd = process.cwd();
+async function loongarch64_getGoVersion() {
+    const goVersion = await $ `go version`;
+    // go version go1.24.1 darwin/arm64
+    const match = goVersion.stdout.match(/go(\d+\.\d+\.\d+)/);
+    if (!match) {
+        throw new Error('Failed to get go version');
+    }
+    return match[1];
+}
 async function setupABI1_0Go(input) {
     // Get system go version
-    const currentGoVersion = (await $ `go version`).stdout.replace('go version ', '');
+    const currentGoVersion = await loongarch64_getGoVersion();
     core.info(`Local go version is ${currentGoVersion}`);
     let oldWorldGoVersion = currentGoVersion;
     let oldWorldGoUrl = '';
