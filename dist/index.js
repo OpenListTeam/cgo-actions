@@ -44593,30 +44593,21 @@ const oldWorldGoVersionDict = {
     '1.24.0': '20250722/go1.24.0.linux-amd64.tar.gz'
 };
 const loongarch64_cwd = process.cwd();
-async function loongarch64_getGoVersion() {
-    const goVersion = await $ `go version`;
-    // go version go1.24.1 darwin/arm64
-    const match = goVersion.stdout.match(/go(\d+\.\d+\.\d+)/);
-    if (!match) {
-        throw new Error('Failed to get go version');
-    }
-    return match[1];
-}
 async function setupABI1_0Go(input) {
     // Get system go version
-    const currentGoVersion = await loongarch64_getGoVersion();
-    // Choose a specific version of go
-    const oldWorldGoVersion = Object.keys(oldWorldGoVersionDict).find(version => (0,umd.compareVersions)(version, currentGoVersion));
+    const currentGoVersion = (await $ `go version`).stdout.replace('go version ', '');
+    core.info(`Local go version is ${currentGoVersion}`);
+    let oldWorldGoVersion = currentGoVersion;
     let oldWorldGoUrl = '';
-    if (!oldWorldGoVersion) {
+    if (oldWorldGoVersion in oldWorldGoVersionDict) {
+        oldWorldGoUrl = oldWorldGoVersionDict[currentGoVersion];
+    }
+    else {
         const error_str = `Current go version ${currentGoVersion} is not supported for linux-loong64-abi1.0. Automatically choosed the latest version listed in ${Object.keys(oldWorldGoVersionDict)}`;
         core.warning(error_str);
         // Choose the latest version
         const _version_list = Object.keys(oldWorldGoVersionDict).sort(umd.compareVersions);
-        oldWorldGoUrl =
-            oldWorldGoVersionDict[_version_list[_version_list.length - 1]];
-    }
-    else {
+        oldWorldGoVersion = _version_list[_version_list.length - 1];
         oldWorldGoUrl = oldWorldGoVersionDict[oldWorldGoVersion];
     }
     core.info(`Using go version ${oldWorldGoVersion} for LoongArch64 ABI1.0`);
