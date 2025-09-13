@@ -46,7 +46,7 @@ async function setupABI1_0Go(input: Input) {
     oldWorldGoUrl = oldWorldGoVersionDict[oldWorldGoVersion]
   }
 
-  core.info(`Using go version ${oldWorldGoVersion}`)
+  core.info(`Using go version ${oldWorldGoVersion} for LoongArch64 ABI1.0`)
 
   // Get major and minor version
   await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/${oldWorldGoUrl} -o go-loong64-abi1.0.tar.gz`
