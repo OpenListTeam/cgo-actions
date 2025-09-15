@@ -1,15 +1,52 @@
 import { $$, calFlags, TempBinName } from '../utils'
+import { compareVersions } from 'compare-versions'
+import * as core from '@actions/core'
 import { registerEngine } from '../runner'
 import { $ } from 'execa'
 import { Input } from '../types'
 
+// Store available go version and its download links
+const oldWorldGoVersionDict = {
+  '1.25.0': '20250821/go1.25.0.linux-amd64.tar.gz',
+  '1.24.6': '20250821/go1.24.6.linux-amd64.tar.gz',
+  '1.24.3': '20250722/go1.24.3.linux-amd64.tar.gz',
+  '1.24.0': '20250722/go1.24.0.linux-amd64.tar.gz'
+} as Record<string, string>
+
 const cwd = process.cwd()
 
-const oldWorldGoVersion = '1.25.0'
+async function getGoVersion() {
+  const goVersion = await $`go version`
+  // go version go1.24.1 darwin/arm64
+  const match = goVersion.stdout.match(/go(\d+\.\d+\.\d+)/)
+  if (!match) {
+    throw new Error('Failed to get go version')
+  }
+  return match[1]
+}
 
 async function setupABI1_0Go(input: Input) {
+  // Get system go version
+  const currentGoVersion = await getGoVersion()
+  core.info(`Local go version is ${currentGoVersion}`)
+  let oldWorldGoVersion = currentGoVersion
+  let oldWorldGoUrl = ''
+  if (oldWorldGoVersion in oldWorldGoVersionDict) {
+    oldWorldGoUrl = oldWorldGoVersionDict[currentGoVersion]
+  } else {
+    const error_str = `Current go version ${currentGoVersion} is not supported for linux-loong64-abi1.0. Automatically choosed the latest version listed in ${Object.keys(oldWorldGoVersionDict)}`
+    core.warning(error_str)
+    // Choose the latest version
+    const _version_list = Object.keys(oldWorldGoVersionDict).sort(
+      compareVersions
+    )
+    oldWorldGoVersion = _version_list[_version_list.length - 1]
+    oldWorldGoUrl = oldWorldGoVersionDict[oldWorldGoVersion]
+  }
+  core.info(`Using go version ${oldWorldGoVersion} for LoongArch64 ABI1.0`)
+
   // Get major and minor version
-  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/20250821/go${oldWorldGoVersion}.linux-amd64.tar.gz -o go-loong64-abi1.0.tar.gz`
+  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/${oldWorldGoUrl} -o go-loong64-abi1.0.tar.gz`
   await $$`rm -rf go-loong64-abi1.0`
   await $$`mkdir go-loong64-abi1.0`
   await $$`tar -xzf go-loong64-abi1.0.tar.gz -C go-loong64-abi1.0 --strip-components=1`
