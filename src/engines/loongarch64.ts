@@ -5,14 +5,6 @@ import { registerEngine } from '../runner'
 import { $ } from 'execa'
 import { Input } from '../types'
 
-// Store available go version and its download links
-const oldWorldGoVersionDict = {
-  '1.25.0': '20250821/go1.25.0.linux-amd64.tar.gz',
-  '1.24.6': '20250821/go1.24.6.linux-amd64.tar.gz',
-  '1.24.3': '20250722/go1.24.3.linux-amd64.tar.gz',
-  '1.24.0': '20250722/go1.24.0.linux-amd64.tar.gz'
-} as Record<string, string>
-
 const cwd = process.cwd()
 
 async function getGoVersion() {
@@ -29,24 +21,54 @@ async function setupABI1_0Go(input: Input) {
   // Get system go version
   const currentGoVersion = await getGoVersion()
   core.info(`Local go version is ${currentGoVersion}`)
+
+  // Fetch available versions
+  core.info('Fetching available Go versions from loong64-abi1-0/golang...')
+  const { stdout: releasesJson } =
+    await $`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL https://api.github.com/repos/loong64-abi1-0/golang/releases`
+
+  interface Asset {
+    browser_download_url: string
+  }
+  interface Release {
+    tag_name: string
+    assets: Asset[]
+  }
+  const releases = JSON.parse(releasesJson) as Release[]
+
+  const oldWorldGoVersionDict = {} as Record<string, string>
+  for (const release of releases) {
+    // tag_name example: "go1.26.0" -> "1.26.0"
+    const version = release.tag_name.replace(/^go/, '')
+    // We need the linux-amd64 toolchain to run on the Action runner
+    const asset = release.assets.find(a =>
+      a.browser_download_url.endsWith('linux-amd64.tar.gz')
+    )
+    if (asset) {
+      oldWorldGoVersionDict[version] = asset.browser_download_url
+    }
+  }
+
   let oldWorldGoVersion = currentGoVersion
   let oldWorldGoUrl = ''
   if (oldWorldGoVersion in oldWorldGoVersionDict) {
     oldWorldGoUrl = oldWorldGoVersionDict[currentGoVersion]
   } else {
-    const error_str = `Current go version ${currentGoVersion} is not supported for linux-loong64-abi1.0. Automatically choosed the latest version listed in ${Object.keys(oldWorldGoVersionDict)}`
-    core.warning(error_str)
     // Choose the latest version
     const _version_list = Object.keys(oldWorldGoVersionDict).sort(
       compareVersions
     )
-    oldWorldGoVersion = _version_list[_version_list.length - 1]
+    const latestVersion = _version_list[_version_list.length - 1]
+    const error_str = `Current go version ${currentGoVersion} is not supported for linux-loong64-abi1.0. Automatically choosed the latest version listed in releases: ${latestVersion}`
+    core.warning(error_str)
+
+    oldWorldGoVersion = latestVersion
     oldWorldGoUrl = oldWorldGoVersionDict[oldWorldGoVersion]
   }
   core.info(`Using go version ${oldWorldGoVersion} for LoongArch64 ABI1.0`)
 
   // Get major and minor version
-  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 https://github.com/loong64/loong64-abi1.0-toolchains/releases/download/${oldWorldGoUrl} -o go-loong64-abi1.0.tar.gz`
+  await $$`curl -H ${String.raw`Authorization: Bearer ${input.github_token}`} -fsSL --retry 3 ${oldWorldGoUrl} -o go-loong64-abi1.0.tar.gz`
   await $$`rm -rf go-loong64-abi1.0`
   await $$`mkdir go-loong64-abi1.0`
   await $$`tar -xzf go-loong64-abi1.0.tar.gz -C go-loong64-abi1.0 --strip-components=1`
