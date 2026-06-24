@@ -1,4 +1,4 @@
-import { $$, calFlags, TempBinName } from '../utils'
+import { $$, calFlags, getGoBuildTagsArgs, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 
@@ -29,10 +29,7 @@ registerEngine({
     fs.mkdirSync(sysroot_dir, { recursive: true })
     await $$`sudo tar -xf ./base.txz -C ${sysroot_dir}`
     fs.rmSync('base.txz')
-    let tags = ''
-    if (input.tags && input.tags.length > 0) {
-      tags = `-tags '${input.tags}'`
-    }
+    const tagsArgs = getGoBuildTagsArgs(input.tags)
     await input.$({
       env: {
         CGO_ENABLED: '1',
@@ -41,6 +38,6 @@ registerEngine({
         CGO_LDFLAGS: '-fuse-ld=lld',
         CC: `clang --target=${target} --sysroot=${sysroot_dir}`
       }
-    })`go build ${tags} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+    })`go build ${tagsArgs} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

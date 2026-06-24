@@ -1,5 +1,5 @@
 import { registerEngine } from '../runner'
-import { $$, calFlags, TempBinName } from '../utils'
+import { $$, calFlags, getXgoTagsArgs, TempBinName } from '../utils'
 
 const targetMap = {
   'darwin-amd64': 'darwin/amd64',
@@ -31,11 +31,8 @@ registerEngine({
   },
   async run(input) {
     const target = targetMap[input.target]
-    let tags = ''
-    if (input.tags && input.tags.length > 0) {
-      tags = `-tags='${input.tags}'`
-    }
-    await input.$`xgo -targets=${target} -out ${TempBinName} ${tags} ${calFlags(input.flags)} ${input.pkgs}`
+    const tagsArgs = getXgoTagsArgs(input.tags)
+    await input.$`xgo -targets=${target} -out ${TempBinName} ${tagsArgs} ${calFlags(input.flags)} ${input.pkgs}`
     const curBin = `${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`
     const outBin = curBin.replace(`-${input.target}`, '')
     // renameSync(

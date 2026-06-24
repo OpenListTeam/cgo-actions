@@ -43995,6 +43995,18 @@ function calFlags(flags) {
     }
     return res;
 }
+function getGoBuildTagsArgs(tags) {
+    if (!tags) {
+        return [];
+    }
+    return ['-tags', tags];
+}
+function getXgoTagsArgs(tags) {
+    if (!tags) {
+        return [];
+    }
+    return [`-tags=${tags}`];
+}
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(7484);
@@ -44207,10 +44219,7 @@ registerEngine({
     },
     async run(input) {
         const arch = input.target.split('-')[1];
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags '${input.tags}'`;
-        }
+        const tagsArgs = getGoBuildTagsArgs(input.tags);
         await input.$({
             env: {
                 CGO_ENABLED: '1',
@@ -44218,7 +44227,7 @@ registerEngine({
                 GOARCH: arch,
                 CC: `${process.cwd()}/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/${arches[arch].cc}`
             }
-        }) `go build ${tags} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `go build ${tagsArgs} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -44385,13 +44394,10 @@ function engineGen(files) {
                     }
                 }
             }
-            let tags = '';
-            if (input.tags && input.tags.length > 0) {
-                tags = `-tags '${input.tags}'`;
-            }
+            const tagsArgs = getGoBuildTagsArgs(input.tags);
             await input.$({
                 env: env
-            }) `go build ${tags} -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`;
+            }) `go build ${tagsArgs} -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`;
         },
         async on_target_rename(input) {
             const [os, arch, musl] = input.target.split('-');
@@ -44427,10 +44433,7 @@ registerEngine({
         await $$ `chmod +x /usr/local/bin/zcc /usr/local/bin/z++`;
     },
     async run(input) {
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags '${input.tags}'`;
-        }
+        const tagsArgs = getGoBuildTagsArgs(input.tags);
         await input.$({
             env: {
                 CGO_ENABLED: '1',
@@ -44439,7 +44442,7 @@ registerEngine({
                 CC: 'zcc',
                 CXX: 'z++'
             }
-        }) `go build ${tags} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `go build ${tagsArgs} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -44475,11 +44478,8 @@ registerEngine({
     },
     async run(input) {
         const target = targetMap[input.target];
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags='${input.tags}'`;
-        }
-        await input.$ `xgo -targets=${target} -out ${TempBinName} ${tags} ${calFlags(input.flags)} ${input.pkgs}`;
+        const tagsArgs = getXgoTagsArgs(input.tags);
+        await input.$ `xgo -targets=${target} -out ${TempBinName} ${tagsArgs} ${calFlags(input.flags)} ${input.pkgs}`;
         const curBin = `${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`;
         const outBin = curBin.replace(`-${input.target}`, '');
         // renameSync(
@@ -44520,10 +44520,7 @@ registerEngine({
         external_fs_default().mkdirSync(sysroot_dir, { recursive: true });
         await $$ `sudo tar -xf ./base.txz -C ${sysroot_dir}`;
         external_fs_default().rmSync('base.txz');
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags '${input.tags}'`;
-        }
+        const tagsArgs = getGoBuildTagsArgs(input.tags);
         await input.$({
             env: {
                 CGO_ENABLED: '1',
@@ -44532,7 +44529,7 @@ registerEngine({
                 CGO_LDFLAGS: '-fuse-ld=lld',
                 CC: `clang --target=${target} --sysroot=${sysroot_dir}`
             }
-        }) `go build ${tags} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `go build ${tagsArgs} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -44587,10 +44584,7 @@ registerEngine({
         const arch = target.split('-')[1];
         const zigTarget = zigTargetMap[target];
         await setupZcx(zigTarget);
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags '${input.tags}'`;
-        }
+        const tagsArgs = getGoBuildTagsArgs(input.tags);
         await input.$({
             env: {
                 CGO_ENABLED: '1',
@@ -44599,7 +44593,7 @@ registerEngine({
                 CC: 'zcc',
                 CXX: 'z++'
             }
-        }) `${cwd}/go-win7/bin/go build ${tags} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
+        }) `${cwd}/go-win7/bin/go build ${tagsArgs} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`;
     }
 });
 
@@ -44690,10 +44684,7 @@ registerEngine({
         const os = target.split('-')[0];
         const arch = target.split('-')[1];
         const abi = target.split('-')[2] ?? 'abi2.0';
-        let tags = '';
-        if (input.tags && input.tags.length > 0) {
-            tags = `-tags '${input.tags}'`;
-        }
+        const tagsArgs = getGoBuildTagsArgs(input.tags);
         if (abi === 'abi1.0') {
             await input.$({
                 env: {
@@ -44703,7 +44694,7 @@ registerEngine({
                     CC: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
                     CXX: `${loongarch64_cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
                 }
-            }) `${loongarch64_cwd}/go-loong64-abi1.0/bin/go build ${tags} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+            }) `${loongarch64_cwd}/go-loong64-abi1.0/bin/go build ${tagsArgs} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
         }
         else {
             await input.$({
@@ -44714,7 +44705,7 @@ registerEngine({
                     CC: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-gcc`,
                     CXX: `${loongarch64_cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
                 }
-            }) `go build ${tags} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
+            }) `go build ${tagsArgs} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`;
         }
     }
 });

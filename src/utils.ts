@@ -55,3 +55,17 @@ export function calFlags(flags: Flags) {
   }
   return res
 }
+
+export function getGoBuildTagsArgs(tags: string) {
+  if (!tags) {
+    return []
+  }
+  return ['-tags', tags]
+}
+
+export function getXgoTagsArgs(tags: string) {
+  if (!tags) {
+    return []
+  }
+  return [`-tags=${tags}`]
+}

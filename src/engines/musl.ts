@@ -1,4 +1,4 @@
-import { $$, TempBinName, calFlags, mapRev } from '../utils'
+import { $$, TempBinName, calFlags, getGoBuildTagsArgs, mapRev } from '../utils'
 import { registerEngine } from '../runner'
 import * as core from '@actions/core'
 import fs from 'fs'
@@ -165,13 +165,10 @@ function engineGen(files: string[]) {
           }
         }
       }
-      let tags = ''
-      if (input.tags && input.tags.length > 0) {
-        tags = `-tags '${input.tags}'`
-      }
+      const tagsArgs = getGoBuildTagsArgs(input.tags)
       await input.$({
         env: env
-      })`go build ${tags} -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`
+      })`go build ${tagsArgs} -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`
     },
     async on_target_rename(input) {
       const [os, arch, musl] = input.target.split('-')

@@ -1,4 +1,4 @@
-import { $$, calFlags, TempBinName } from '../utils'
+import { $$, calFlags, getGoBuildTagsArgs, TempBinName } from '../utils'
 import { registerEngine } from '../runner'
 import fs from 'fs'
 import { $ } from 'execa'
@@ -56,10 +56,7 @@ registerEngine({
     const arch = target.split('-')[1]
     const zigTarget = zigTargetMap[target]
     await setupZcx(zigTarget)
-    let tags = ''
-    if (input.tags && input.tags.length > 0) {
-      tags = `-tags '${input.tags}'`
-    }
+    const tagsArgs = getGoBuildTagsArgs(input.tags)
     await input.$({
       env: {
         CGO_ENABLED: '1',
@@ -68,6 +65,6 @@ registerEngine({
         CC: 'zcc',
         CXX: 'z++'
       }
-    })`${cwd}/go-win7/bin/go build ${tags} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
+    })`${cwd}/go-win7/bin/go build ${tagsArgs} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
   }
 })
