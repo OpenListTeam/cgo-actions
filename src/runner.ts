@@ -99,9 +99,11 @@ export class Runner {
       const flags = await this.getFlags(tmpInput)
       core.debug(`Flags json: ${JSON.stringify(flags, null, 2)}...`)
       core.info(`Flags: ${calFlags(flags)}...`)
+      const tags = core.getInput('tags')
       const input = {
         ...tmpInput,
-        flags
+        flags,
+        tags
       }
       if (engine.prepare && !prepared.has(engineKey(engine))) {
         core.info(`Preparing engine: ${engineKey(engine)}`)

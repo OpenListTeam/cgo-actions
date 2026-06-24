@@ -21,6 +21,12 @@ inputs:
     description: 'The flags to pass to the go build command'
     required: false
     default: '-ldflags=-w -s'
+  tags:
+    description:
+      'The tags to pass to the go build command, for example: "netgo osusergo
+      static_build"'
+    required: false
+    default: ''
   static-link-for-musl:
     description: 'Whether to statically link for the musl libc'
     required: false

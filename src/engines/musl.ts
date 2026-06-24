@@ -165,9 +165,13 @@ function engineGen(files: string[]) {
           }
         }
       }
+      let tags = ''
+      if (input.tags && input.tags.length > 0) {
+        tags = `-tags '${input.tags}'`
+      }
       await input.$({
         env: env
-      })`go build -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`
+      })`go build ${tags} -o ${TempBinName} ${calFlags(flags)} ${input.pkgs}`
     },
     async on_target_rename(input) {
       const [os, arch, musl] = input.target.split('-')

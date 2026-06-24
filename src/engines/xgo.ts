@@ -31,7 +31,11 @@ registerEngine({
   },
   async run(input) {
     const target = targetMap[input.target]
-    await input.$`xgo -targets=${target} -out ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+    let tags = ''
+    if (input.tags && input.tags.length > 0) {
+      tags = `-tags='${input.tags}'`
+    }
+    await input.$`xgo -targets=${target} -out ${TempBinName} ${tags} ${calFlags(input.flags)} ${input.pkgs}`
     const curBin = `${TempBinName}-${input.target}${input.target.includes('windows') ? '.exe' : ''}`
     const outBin = curBin.replace(`-${input.target}`, '')
     // renameSync(

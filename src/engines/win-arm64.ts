@@ -22,6 +22,10 @@ registerEngine({
     await $$`chmod +x /usr/local/bin/zcc /usr/local/bin/z++`
   },
   async run(input) {
+    let tags = ''
+    if (input.tags && input.tags.length > 0) {
+      tags = `-tags '${input.tags}'`
+    }
     await input.$({
       env: {
         CGO_ENABLED: '1',
@@ -30,6 +34,6 @@ registerEngine({
         CC: 'zcc',
         CXX: 'z++'
       }
-    })`go build -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
+    })`go build ${tags} -o ${TempBinName}.exe ${calFlags(input.flags)} ${input.pkgs}`
   }
 })

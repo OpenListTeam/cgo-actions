@@ -29,6 +29,7 @@ export type CommonInputWithTarget = CommonInput & {
 
 export type Input = CommonInputWithTarget & {
   flags: Flags
+  tags: string
 }
 
 export type Engine = {

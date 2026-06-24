@@ -71,6 +71,7 @@ jobs:
 | dir                  | The directory to work                           | No       | .                                                                       |
 | packages             | The packages to build                           | No       | .                                                                       |
 | flags                | The flags to pass to the go build command       | No       | -ldflags=-w -s                                                          |
+| tags                 | The tags to pass to the go build command        | No       |                                                                         |
 | static-link-for-musl | Whether to statically link for the musl libc    | No       | true                                                                    |
 | targets              | The targets to build for                        | No       | \*                                                                      |
 | out-dir              | The output directory                            | No       | bin                                                                     |

@@ -106,6 +106,10 @@ registerEngine({
     const os = target.split('-')[0]
     const arch = target.split('-')[1]
     const abi = target.split('-')[2] ?? 'abi2.0'
+    let tags = ''
+    if (input.tags && input.tags.length > 0) {
+      tags = `-tags '${input.tags}'`
+    }
     if (abi === 'abi1.0') {
       await input.$({
         env: {
@@ -115,7 +119,7 @@ registerEngine({
           CC: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-gcc`,
           CXX: `${cwd}/gcc8-loong64-abi1.0/bin/loongarch64-linux-gnu-g++`
         }
-      })`${cwd}/go-loong64-abi1.0/bin/go build -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+      })`${cwd}/go-loong64-abi1.0/bin/go build ${tags} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
     } else {
       await input.$({
         env: {
@@ -125,7 +129,7 @@ registerEngine({
           CC: `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-gcc`,
           CXX: `${cwd}/gcc12-loong64-abi2.0/bin/loongarch64-unknown-linux-gnu-g++`
         }
-      })`go build -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+      })`go build ${tags} -a -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
     }
   }
 })

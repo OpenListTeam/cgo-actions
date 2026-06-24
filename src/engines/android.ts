@@ -26,6 +26,10 @@ registerEngine({
   },
   async run(input) {
     const arch = input.target.split('-')[1]
+    let tags = ''
+    if (input.tags && input.tags.length > 0) {
+      tags = `-tags '${input.tags}'`
+    }
     await input.$({
       env: {
         CGO_ENABLED: '1',
@@ -33,6 +37,6 @@ registerEngine({
         GOARCH: arch,
         CC: `${process.cwd()}/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/${arches[arch].cc}`
       }
-    })`go build -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
+    })`go build ${tags} -o ${TempBinName} ${calFlags(input.flags)} ${input.pkgs}`
   }
 })
